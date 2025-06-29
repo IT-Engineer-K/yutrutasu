@@ -41,7 +41,7 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
                   const Icon(Icons.eco, color: Color(0xFF66BB6A)),
                   const SizedBox(width: 8),
                   const Text(
-                    '新しい「やること」',
+                    '新しいプロジェクト',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,

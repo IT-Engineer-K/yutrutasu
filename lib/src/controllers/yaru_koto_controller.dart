@@ -29,7 +29,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 新しい「やること」を追加
+  /// 新しいプロジェクトを追加
   Future<void> addYaruKoto(String title, {String? description}) async {
     final yaruKoto = YaruKoto(
       id: _uuid.v4(),
@@ -47,7 +47,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 「やること」にタスク項目を追加
+  /// プロジェクトにタスク項目を追加
   Future<void> addTaskItem(String yaruKotoId, String taskTitle) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -121,7 +121,7 @@ class YaruKotoController extends ChangeNotifier {
     await updateTaskProgress(yaruKotoId, taskId, nextProgress);
   }
 
-  /// 「やること」を削除
+  /// プロジェクトを削除
   Future<void> deleteYaruKoto(String id) async {
     try {
       await _service.deleteYaruKoto(id);

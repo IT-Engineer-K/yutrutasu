@@ -64,10 +64,32 @@ class MyApp extends StatelessWidget {
             primaryColor: const Color(0xFF66BB6A),
             fontFamily: 'NotoSansJP', // 日本語フォント
             useMaterial3: true,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFFE8F5E8),
+              foregroundColor: Color(0xFF2E7D2E),
+              elevation: 0,
+              titleTextStyle: TextStyle(
+                color: Color(0xFF2E7D2E),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
           ),
           darkTheme: ThemeData.dark().copyWith(
             primaryColor: const Color(0xFF66BB6A),
             useMaterial3: true,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color(0xFF2E4A2E),
+              foregroundColor: Color(0xFF81C784),
+              elevation: 0,
+              titleTextStyle: TextStyle(
+                color: Color(0xFF81C784),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
           ),
           themeMode: settingsController.themeMode,
 

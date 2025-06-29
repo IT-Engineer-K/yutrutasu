@@ -28,15 +28,27 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
       appBar: AppBar(
         title: const Row(
           children: [
-            Text('🌱 ゆるたす'),
+            Text(
+              '🌱 ゆるたす',
+              style: TextStyle(
+                color: Color(0xFF2E7D2E),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             SizedBox(width: 8),
             Text(
-              'やることリスト',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.normal),
+              'プロジェクトリスト',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF4CAF50),
+              ),
             ),
           ],
         ),
         backgroundColor: const Color(0xFFE8F5E8),
+        foregroundColor: const Color(0xFF2E7D2E), // AppBar全体のテキスト色を設定
         elevation: 0,
       ),
       body: ListenableBuilder(
@@ -67,7 +79,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'まだ「やること」がありません',
+                    'まだプロジェクトがありません',
                     style: TextStyle(
                       fontSize: 18,
                       color: Color(0xFF66BB6A),
@@ -76,7 +88,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '下のボタンで新しい「やること」を\n追加してみましょう 🌱',
+                    '下のボタンで新しいプロジェクトを\n追加してみましょう 🌱',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Color(0xFF81C784),
@@ -86,7 +98,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                   ElevatedButton.icon(
                     onPressed: () => _showAddYaruKotoDialog(context),
                     icon: const Icon(Icons.add),
-                    label: const Text('最初の「やること」を追加'),
+                    label: const Text('最初のプロジェクトを追加'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF66BB6A),
                       foregroundColor: Colors.white,

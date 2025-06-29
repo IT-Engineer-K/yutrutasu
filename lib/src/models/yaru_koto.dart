@@ -1,6 +1,6 @@
 import 'task_item.dart';
 
-/// 「やること」を表すクラス
+/// プロジェクトを表すクラス
 class YaruKoto {
   final String id;
   final String title;

@@ -19,8 +19,16 @@ class YaruKotoDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9F5),
       appBar: AppBar(
-        title: Text(yaruKoto.title),
+        title: Text(
+          yaruKoto.title,
+          style: const TextStyle(
+            color: Color(0xFF2E7D2E),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xFFE8F5E8),
+        foregroundColor: const Color(0xFF2E7D2E), // AppBar全体のテキスト色を設定
         elevation: 0,
       ),
       body: ListenableBuilder(

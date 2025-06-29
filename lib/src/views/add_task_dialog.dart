@@ -59,6 +59,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                     borderSide: BorderSide(color: Color(0xFF66BB6A)),
                   ),
                   labelStyle: TextStyle(color: Color(0xFF66BB6A)),
+                  hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {

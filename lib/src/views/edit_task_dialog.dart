@@ -49,6 +49,7 @@ class _EditTaskDialogState extends State<EditTaskDialog> {
             borderSide: BorderSide(color: Color(0xFF66BB6A)),
           ),
           labelStyle: TextStyle(color: Color(0xFF66BB6A)),
+          hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
         ),
         autofocus: true,
       ),

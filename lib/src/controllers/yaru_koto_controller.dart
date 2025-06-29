@@ -132,6 +132,25 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
+  /// プロジェクト名・説明を更新
+  Future<void> updateYaruKoto(String id, {String? title, String? description}) async {
+    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == id);
+    if (yaruKotoIndex == -1) return;
+
+    final updatedYaruKoto = _yaruKotoList[yaruKotoIndex].copyWith(
+      title: title,
+      description: description,
+    );
+
+    try {
+      await _service.updateYaruKoto(updatedYaruKoto);
+      _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating yaru koto: $e');
+    }
+  }
+
   /// タスク項目を削除
   Future<void> deleteTaskItem(String yaruKotoId, String taskId) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
@@ -148,6 +167,29 @@ class YaruKotoController extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error deleting task item: $e');
+    }
+  }
+
+  /// タスク項目の名前を更新
+  Future<void> updateTaskItem(String yaruKotoId, String taskId, String newTitle) async {
+    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
+    if (yaruKotoIndex == -1) return;
+
+    final yaruKoto = _yaruKotoList[yaruKotoIndex];
+    final taskIndex = yaruKoto.items.indexWhere((e) => e.id == taskId);
+    if (taskIndex == -1) return;
+
+    final updatedItems = List<TaskItem>.from(yaruKoto.items);
+    updatedItems[taskIndex] = updatedItems[taskIndex].copyWith(title: newTitle);
+
+    final updatedYaruKoto = yaruKoto.copyWith(items: updatedItems);
+
+    try {
+      await _service.updateYaruKoto(updatedYaruKoto);
+      _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error updating task item: $e');
     }
   }
 }

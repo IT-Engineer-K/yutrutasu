@@ -3,6 +3,7 @@ import '../models/yaru_koto.dart';
 import '../models/task_item.dart';
 import '../controllers/yaru_koto_controller.dart';
 import 'add_task_dialog.dart';
+import 'edit_task_dialog.dart';
 
 class YaruKotoDetailView extends StatelessWidget {
   const YaruKotoDetailView({
@@ -226,50 +227,35 @@ class _TaskListCard extends StatelessWidget {
             else
               ...yaruKoto.items.map((item) => _TaskItemTile(
                 item: item,
+                yaruKoto: yaruKoto,
+                controller: controller,
                 onProgressTap: () => controller.nextTaskProgress(yaruKoto.id, item.id),
-                onDelete: () => _confirmDeleteTask(context, item),
               )),
           ],
         ),
       ),
     );
   }
-
-  void _confirmDeleteTask(BuildContext context, TaskItem item) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('項目を削除'),
-        content: Text('「${item.title}」を削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
-          ),
-          TextButton(
-            onPressed: () {
-              controller.deleteTaskItem(yaruKoto.id, item.id);
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('削除'),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-class _TaskItemTile extends StatelessWidget {
+class _TaskItemTile extends StatefulWidget {
   const _TaskItemTile({
     required this.item,
+    required this.yaruKoto,
+    required this.controller,
     required this.onProgressTap,
-    required this.onDelete,
   });
 
   final TaskItem item;
+  final YaruKoto yaruKoto;
+  final YaruKotoController controller;
   final VoidCallback onProgressTap;
-  final VoidCallback onDelete;
+
+  @override
+  State<_TaskItemTile> createState() => _TaskItemTileState();
+}
+
+class _TaskItemTileState extends State<_TaskItemTile> {
 
   @override
   Widget build(BuildContext context) {
@@ -283,34 +269,34 @@ class _TaskItemTile extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         title: Text(
-          item.title,
+          widget.item.title,
           style: TextStyle(
-            decoration: item.progress == TaskProgress.completed
+            decoration: widget.item.progress == TaskProgress.completed
                 ? TextDecoration.lineThrough
                 : null,
-            color: item.progress == TaskProgress.completed
+            color: widget.item.progress == TaskProgress.completed
                 ? const Color(0xFF757575)
                 : const Color(0xFF2E7D2E),
             fontWeight: FontWeight.w500,
           ),
         ),
         leading: InkWell(
-          onTap: onProgressTap,
+          onTap: widget.onProgressTap,
           borderRadius: BorderRadius.circular(20),
           child: Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: _getProgressColor(item.progress),
+              color: _getProgressColor(widget.item.progress),
               border: Border.all(
-                color: _getProgressBorderColor(item.progress),
+                color: _getProgressBorderColor(widget.item.progress),
                 width: 2,
               ),
             ),
             child: Center(
               child: Text(
-                _getProgressEmoji(item.progress),
+                _getProgressEmoji(widget.item.progress),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -320,20 +306,25 @@ class _TaskItemTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              item.progress.label,
+              widget.item.progress.label,
               style: TextStyle(
                 fontSize: 12,
-                color: _getProgressBorderColor(item.progress),
+                color: _getProgressBorderColor(widget.item.progress),
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(width: 8),
-            IconButton(
-              onPressed: onDelete,
-              icon: const Icon(Icons.delete_outline, size: 20),
-              color: const Color(0xFFFF7043),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+            InkWell(
+              onTap: () => _showTaskContextMenu(context),
+              borderRadius: BorderRadius.circular(20),
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.more_vert,
+                  color: Color(0xFF81C784),
+                  size: 16,
+                ),
+              ),
             ),
           ],
         ),
@@ -372,5 +363,84 @@ class _TaskItemTile extends StatelessWidget {
       case TaskProgress.completed:
         return '🌿';
     }
+  }
+
+  void _showTaskContextMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Color(0xFF66BB6A)),
+              title: const Text('名前を編集'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showEditTaskDialog(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('削除'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _confirmDeleteTask(context);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditTaskDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => EditTaskDialog(
+        initialTitle: widget.item.title,
+        onUpdate: (title) {
+          widget.controller.updateTaskItem(widget.yaruKoto.id, widget.item.id, title);
+        },
+      ),
+    );
+  }
+
+  void _confirmDeleteTask(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('項目を削除'),
+        content: Text('「${widget.item.title}」を削除しますか？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.controller.deleteTaskItem(widget.yaruKoto.id, widget.item.id);
+              Navigator.of(context).pop();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
   }
 }

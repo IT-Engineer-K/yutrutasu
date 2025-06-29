@@ -3,6 +3,7 @@ import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
+import 'edit_yaru_koto_dialog.dart';
 
 class YaruKotoListView extends StatefulWidget {
   const YaruKotoListView({super.key, required this.controller});
@@ -118,7 +119,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
               return _YaruKotoCard(
                 yaruKoto: yaruKoto,
                 onTap: () => _navigateToDetail(context, yaruKoto),
-                onDelete: () => _confirmDelete(context, yaruKoto),
+                onMenuTap: () => _showContextMenu(context, yaruKoto),
               );
             },
           );
@@ -177,18 +178,78 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
       ),
     );
   }
+
+  void _showContextMenu(BuildContext context, YaruKoto yaruKoto) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Color(0xFF66BB6A)),
+              title: const Text('名前を編集'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _showEditYaruKotoDialog(context, yaruKoto);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('削除'),
+              onTap: () {
+                Navigator.of(context).pop();
+                _confirmDelete(context, yaruKoto);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditYaruKotoDialog(BuildContext context, YaruKoto yaruKoto) {
+    showDialog(
+      context: context,
+      builder: (context) => EditYaruKotoDialog(
+        initialTitle: yaruKoto.title,
+        initialDescription: yaruKoto.description,
+        onUpdate: (title, description) {
+          widget.controller.updateYaruKoto(
+            yaruKoto.id,
+            title: title,
+            description: description,
+          );
+        },
+      ),
+    );
+  }
 }
 
 class _YaruKotoCard extends StatelessWidget {
   const _YaruKotoCard({
     required this.yaruKoto,
     required this.onTap,
-    required this.onDelete,
+    required this.onMenuTap,
   });
 
   final YaruKoto yaruKoto;
   final VoidCallback onTap;
-  final VoidCallback onDelete;
+  final VoidCallback onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -220,11 +281,17 @@ class _YaruKotoCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: onDelete,
-                    icon: const Icon(Icons.delete_outline, color: Color(0xFFFF7043)),
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
+                  InkWell(
+                    onTap: onMenuTap,
+                    borderRadius: BorderRadius.circular(20),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: const Icon(
+                        Icons.more_vert,
+                        color: Color(0xFF81C784),
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ],
               ),

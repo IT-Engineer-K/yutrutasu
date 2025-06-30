@@ -113,8 +113,13 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: widget.controller.yaruKotoList.length,
+            itemCount: widget.controller.yaruKotoList.length + 1, // 余白用のアイテムを追加
             itemBuilder: (context, index) {
+              // 最後のアイテムは余白として表示
+              if (index == widget.controller.yaruKotoList.length) {
+                return const SizedBox(height: 80); // FloatingActionButtonとの干渉を避ける余白
+              }
+              
               final yaruKoto = widget.controller.yaruKotoList[index];
               return _YaruKotoCard(
                 yaruKoto: yaruKoto,

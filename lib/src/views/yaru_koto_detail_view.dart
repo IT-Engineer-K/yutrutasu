@@ -224,13 +224,15 @@ class _TaskListCard extends StatelessWidget {
                   ],
                 ),
               )
-            else
+            else ...[
               ...yaruKoto.items.map((item) => _TaskItemTile(
                 item: item,
                 yaruKoto: yaruKoto,
                 controller: controller,
                 onProgressTap: () => controller.nextTaskProgress(yaruKoto.id, item.id),
               )),
+              const SizedBox(height: 80), // FloatingActionButtonとの干渉を避ける余白
+            ],
           ],
         ),
       ),

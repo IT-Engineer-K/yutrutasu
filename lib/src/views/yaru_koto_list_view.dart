@@ -111,22 +111,40 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: widget.controller.yaruKotoList.length + 1, // 余白用のアイテムを追加
-            itemBuilder: (context, index) {
-              // 最後のアイテムは余白として表示
-              if (index == widget.controller.yaruKotoList.length) {
-                return const SizedBox(height: 80); // FloatingActionButtonとの干渉を避ける余白
-              }
-              
-              final yaruKoto = widget.controller.yaruKotoList[index];
-              return _YaruKotoCard(
-                yaruKoto: yaruKoto,
-                onTap: () => _navigateToDetail(context, yaruKoto),
-                onMenuTap: () => _showContextMenu(context, yaruKoto),
-              );
-            },
+          return Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.transparent,
+            ),
+            child: ReorderableListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: widget.controller.yaruKotoList.length + 1, // 余白用のアイテムを追加
+              onReorder: (oldIndex, newIndex) {
+                // 最後のアイテム（余白）の場合は並べ替えしない
+                if (oldIndex >= widget.controller.yaruKotoList.length || 
+                    newIndex > widget.controller.yaruKotoList.length) {
+                  return;
+                }
+                widget.controller.reorderYaruKoto(oldIndex, newIndex);
+              },
+              itemBuilder: (context, index) {
+                // 最後のアイテムは余白として表示
+                if (index == widget.controller.yaruKotoList.length) {
+                  return Container(
+                    key: const ValueKey('spacer'),
+                    height: 80, // FloatingActionButtonとの干渉を避ける余白
+                  );
+                }
+                
+                final yaruKoto = widget.controller.yaruKotoList[index];
+                return _YaruKotoCard(
+                  key: ValueKey(yaruKoto.id),
+                  yaruKoto: yaruKoto,
+                  onTap: () => _navigateToDetail(context, yaruKoto),
+                  onMenuTap: () => _showContextMenu(context, yaruKoto),
+                  index: index,
+                );
+              },
+            ),
           );
         },
       ),
@@ -247,14 +265,17 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
 
 class _YaruKotoCard extends StatelessWidget {
   const _YaruKotoCard({
+    super.key,
     required this.yaruKoto,
     required this.onTap,
     required this.onMenuTap,
+    required this.index,
   });
 
   final YaruKoto yaruKoto;
   final VoidCallback onTap;
   final VoidCallback onMenuTap;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
@@ -286,17 +307,34 @@ class _YaruKotoCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  InkWell(
-                    onTap: onMenuTap,
-                    borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: const Icon(
-                        Icons.more_vert,
-                        color: Color(0xFF81C784),
-                        size: 20,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: onMenuTap,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: const Icon(
+                            Icons.more_vert,
+                            color: Color(0xFF81C784),
+                            size: 20,
+                          ),
+                        ),
                       ),
-                    ),
+                      // ドラッグハンドル
+                      ReorderableDragStartListener(
+                        index: index,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: const Icon(
+                            Icons.drag_handle,
+                            color: Color(0xFF81C784),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

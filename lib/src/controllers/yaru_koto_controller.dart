@@ -192,4 +192,50 @@ class YaruKotoController extends ChangeNotifier {
       debugPrint('Error updating task item: $e');
     }
   }
+
+  /// タスク項目の順序を変更
+  Future<void> reorderTaskItems(String yaruKotoId, int oldIndex, int newIndex) async {
+    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
+    if (yaruKotoIndex == -1) return;
+
+    final yaruKoto = _yaruKotoList[yaruKotoIndex];
+    final updatedItems = List<TaskItem>.from(yaruKoto.items);
+
+    // リストの並べ替え処理
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final TaskItem item = updatedItems.removeAt(oldIndex);
+    updatedItems.insert(newIndex, item);
+
+    final updatedYaruKoto = yaruKoto.copyWith(items: updatedItems);
+
+    try {
+      await _service.updateYaruKoto(updatedYaruKoto);
+      _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error reordering task items: $e');
+    }
+  }
+
+  /// プロジェクト一覧の順序を変更
+  Future<void> reorderYaruKoto(int oldIndex, int newIndex) async {
+    // リストの並べ替え処理
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+    final YaruKoto item = _yaruKotoList.removeAt(oldIndex);
+    _yaruKotoList.insert(newIndex, item);
+
+    try {
+      // 全てのプロジェクトを更新（順序を保存するため）
+      for (int i = 0; i < _yaruKotoList.length; i++) {
+        await _service.updateYaruKoto(_yaruKotoList[i]);
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error reordering yaru koto: $e');
+    }
+  }
 }

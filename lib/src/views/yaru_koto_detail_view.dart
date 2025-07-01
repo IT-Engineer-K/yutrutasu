@@ -225,12 +225,29 @@ class _TaskListCard extends StatelessWidget {
                 ),
               )
             else ...[
-              ...yaruKoto.items.map((item) => _TaskItemTile(
-                item: item,
-                yaruKoto: yaruKoto,
-                controller: controller,
-                onProgressTap: () => controller.nextTaskProgress(yaruKoto.id, item.id),
-              )),
+              Theme(
+                data: Theme.of(context).copyWith(
+                  canvasColor: Colors.transparent,
+                ),
+                child: ReorderableListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: yaruKoto.items.length,
+                  onReorder: (oldIndex, newIndex) {
+                    controller.reorderTaskItems(yaruKoto.id, oldIndex, newIndex);
+                  },
+                  itemBuilder: (context, index) {
+                    final item = yaruKoto.items[index];
+                    return _TaskItemTile(
+                      key: ValueKey(item.id),
+                      item: item,
+                      yaruKoto: yaruKoto,
+                      controller: controller,
+                      onProgressTap: () => controller.nextTaskProgress(yaruKoto.id, item.id),
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 80), // FloatingActionButtonとの干渉を避ける余白
             ],
           ],
@@ -242,6 +259,7 @@ class _TaskListCard extends StatelessWidget {
 
 class _TaskItemTile extends StatefulWidget {
   const _TaskItemTile({
+    super.key,
     required this.item,
     required this.yaruKoto,
     required this.controller,
@@ -323,6 +341,19 @@ class _TaskItemTileState extends State<_TaskItemTile> {
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
                   Icons.more_vert,
+                  color: Color(0xFF81C784),
+                  size: 16,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+            // ドラッグハンドル
+            ReorderableDragStartListener(
+              index: widget.yaruKoto.items.indexOf(widget.item),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.drag_handle,
                   color: Color(0xFF81C784),
                   size: 16,
                 ),

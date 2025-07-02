@@ -26,9 +26,9 @@ class YaruKoto {
   /// 進捗率のラベル
   String get progressLabel {
     final percentage = progressPercentage;
-    if (percentage == 0) return '未着手';
+    if (percentage == 0) return '未着手🌰';
     if (percentage < 100) return 'やってる🌱';
-    return '完了🌿';
+    return '完了🌳';
   }
 
   YaruKoto copyWith({

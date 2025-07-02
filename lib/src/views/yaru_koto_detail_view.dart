@@ -472,11 +472,11 @@ class _TaskItemCardState extends State<_TaskItemCard> {
   String _getProgressEmoji(TaskProgress progress) {
     switch (progress) {
       case TaskProgress.notStarted:
-        return '⚪';
+        return '🌰';
       case TaskProgress.inProgress:
         return '🌱';
       case TaskProgress.completed:
-        return '🌿';
+        return '🌳';
     }
   }
 

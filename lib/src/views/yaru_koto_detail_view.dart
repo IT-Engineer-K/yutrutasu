@@ -39,18 +39,82 @@ class YaruKotoDetailView extends StatelessWidget {
           final currentYaruKoto = controller.yaruKotoList
               .firstWhere((e) => e.id == yaruKoto.id, orElse: () => yaruKoto);
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _ProgressCard(yaruKoto: currentYaruKoto),
-                const SizedBox(height: 16),
-                _TaskListCard(
-                  yaruKoto: currentYaruKoto,
-                  controller: controller,
-                ),
-              ],
+          if (currentYaruKoto.items.isEmpty) {
+            // 項目がない場合は従来通りのレイアウト
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _ProgressCard(yaruKoto: currentYaruKoto),
+                  const SizedBox(height: 16),
+                  _TaskListCard(
+                    yaruKoto: currentYaruKoto,
+                    controller: controller,
+                  ),
+                ],
+              ),
+            );
+          }
+
+          // 項目がある場合はReorderableListViewで全体をスクロール可能に
+          return Theme(
+            data: Theme.of(context).copyWith(
+              canvasColor: Colors.transparent,
+            ),
+            child: ReorderableListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: currentYaruKoto.items.length + 3, // プログレスカード + 項目リストヘッダー + 項目数 + スペーサー
+              onReorder: (oldIndex, newIndex) {
+                // 最初の2つはプログレスカードとヘッダー、最後の1つはスペーサーなので、項目の並び替えのみ処理
+                if (oldIndex < 2 || newIndex < 2 || 
+                    oldIndex >= currentYaruKoto.items.length + 2 || 
+                    newIndex > currentYaruKoto.items.length + 2) return;
+                final adjustedOldIndex = oldIndex - 2;
+                final adjustedNewIndex = newIndex - 2;
+                controller.reorderTaskItems(currentYaruKoto.id, adjustedOldIndex, adjustedNewIndex);
+              },
+              itemBuilder: (context, index) {
+                if (index == 0) {
+                  // プログレスカード（ドラッグ無効）
+                  return IgnorePointer(
+                    key: const ValueKey('progress_card'),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: _ProgressCard(yaruKoto: currentYaruKoto),
+                    ),
+                  );
+                } else if (index == 1) {
+                  // 項目リストのヘッダー（ドラッグ無効）
+                  return IgnorePointer(
+                    key: const ValueKey('task_list_header'),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: _TaskListHeader(),
+                    ),
+                  );
+                } else if (index == currentYaruKoto.items.length + 2) {
+                  // スペーサー（FloatingActionButtonとの干渉を避ける）
+                  return Container(
+                    key: const ValueKey('spacer'),
+                    height: 80,
+                  );
+                } else {
+                  // 項目タイル
+                  final itemIndex = index - 2;
+                  final item = currentYaruKoto.items[itemIndex];
+                  return Container(
+                    key: ValueKey(item.id),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: _TaskItemCard(
+                      item: item,
+                      yaruKoto: currentYaruKoto,
+                      controller: controller,
+                      onProgressTap: () => controller.nextTaskProgress(currentYaruKoto.id, item.id),
+                    ),
+                  );
+                }
+              },
             ),
           );
         },
@@ -224,32 +288,34 @@ class _TaskListCard extends StatelessWidget {
                   ],
                 ),
               )
-            else ...[
-              Theme(
-                data: Theme.of(context).copyWith(
-                  canvasColor: Colors.transparent,
-                ),
-                child: ReorderableListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: yaruKoto.items.length,
-                  onReorder: (oldIndex, newIndex) {
-                    controller.reorderTaskItems(yaruKoto.id, oldIndex, newIndex);
-                  },
-                  itemBuilder: (context, index) {
-                    final item = yaruKoto.items[index];
-                    return _TaskItemTile(
-                      key: ValueKey(item.id),
-                      item: item,
-                      yaruKoto: yaruKoto,
-                      controller: controller,
-                      onProgressTap: () => controller.nextTaskProgress(yaruKoto.id, item.id),
-                    );
-                  },
+            else
+              Center(
+                child: Column(
+                  children: [
+                    const Icon(
+                      Icons.add_circle_outline,
+                      size: 48,
+                      color: Color(0xFFAED581),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'まだ項目がありません',
+                      style: TextStyle(
+                        color: Color(0xFF81C784),
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      '右下の + ボタンで追加しましょう',
+                      style: TextStyle(
+                        color: Color(0xFFAED581),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 80), // FloatingActionButtonとの干渉を避ける余白
-            ],
           ],
         ),
       ),
@@ -257,8 +323,36 @@ class _TaskListCard extends StatelessWidget {
   }
 }
 
-class _TaskItemTile extends StatefulWidget {
-  const _TaskItemTile({
+class _TaskListHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 2,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            const Icon(Icons.list_alt, color: Color(0xFF66BB6A)),
+            const SizedBox(width: 8),
+            const Text(
+              '項目一覧',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF2E7D2E),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TaskItemCard extends StatefulWidget {
+  const _TaskItemCard({
     super.key,
     required this.item,
     required this.yaruKoto,
@@ -272,22 +366,22 @@ class _TaskItemTile extends StatefulWidget {
   final VoidCallback onProgressTap;
 
   @override
-  State<_TaskItemTile> createState() => _TaskItemTileState();
+  State<_TaskItemCard> createState() => _TaskItemCardState();
 }
 
-class _TaskItemTileState extends State<_TaskItemTile> {
+class _TaskItemCardState extends State<_TaskItemCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FCF8),
+    return Card(
+      elevation: 1,
+      color: const Color(0xFFF8FCF8),
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFFE8F5E8)),
+        side: const BorderSide(color: Color(0xFFE8F5E8)),
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         title: Text(
           widget.item.title,
           style: TextStyle(
@@ -298,6 +392,7 @@ class _TaskItemTileState extends State<_TaskItemTile> {
                 ? const Color(0xFF757575)
                 : const Color(0xFF2E7D2E),
             fontWeight: FontWeight.w500,
+            fontSize: 16,
           ),
         ),
         leading: InkWell(
@@ -341,19 +436,6 @@ class _TaskItemTileState extends State<_TaskItemTile> {
                 padding: const EdgeInsets.all(8),
                 child: const Icon(
                   Icons.more_vert,
-                  color: Color(0xFF81C784),
-                  size: 16,
-                ),
-              ),
-            ),
-            const SizedBox(width: 4),
-            // ドラッグハンドル
-            ReorderableDragStartListener(
-              index: widget.yaruKoto.items.indexOf(widget.item),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                child: const Icon(
-                  Icons.drag_handle,
                   color: Color(0xFF81C784),
                   size: 16,
                 ),

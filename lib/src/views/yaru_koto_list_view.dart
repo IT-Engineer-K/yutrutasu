@@ -322,18 +322,6 @@ class _YaruKotoCard extends StatelessWidget {
                           ),
                         ),
                       ),
-                      // ドラッグハンドル
-                      ReorderableDragStartListener(
-                        index: index,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          child: const Icon(
-                            Icons.drag_handle,
-                            color: Color(0xFF81C784),
-                            size: 20,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],

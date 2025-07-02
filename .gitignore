@@ -41,3 +41,40 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Environment variables (contains sensitive information)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# AdMob and Firebase configuration files (may contain sensitive keys)
+/android/app/google-services.json
+/ios/Runner/GoogleService-Info.plist
+
+# Key store files
+*.jks
+*.keystore
+*.p12
+*.key
+
+# Local configuration files
+/android/local.properties
+/android/key.properties
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Editor directories and files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

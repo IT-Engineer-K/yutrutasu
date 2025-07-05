@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../models/task_item.dart';
+import '../models/task.dart';
 import '../controllers/yaru_koto_controller.dart';
 import 'edit_task_dialog.dart';
-import 'item_task_integrated_view.dart';
+import 'edit_item_dialog.dart';
+import 'add_task_dialog.dart';
 
 class YaruKotoDetailView extends StatelessWidget {
   const YaruKotoDetailView({
@@ -73,22 +75,10 @@ class YaruKotoDetailView extends StatelessWidget {
                     final item = currentYaruKoto.items[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
-                      child: _TaskItemCard(
+                      child: _ExpandableTaskItemCard(
                         item: item,
                         yaruKoto: currentYaruKoto,
                         controller: controller,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ItemTaskIntegratedView(
-                                yaruKoto: currentYaruKoto,
-                                taskItem: item,
-                                controller: controller,
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     );
                   },
@@ -284,92 +274,163 @@ class _HeaderWidget extends StatelessWidget {
   }
 }
 
-class _TaskItemCard extends StatefulWidget {
-  const _TaskItemCard({
+class _ExpandableTaskItemCard extends StatefulWidget {
+  const _ExpandableTaskItemCard({
     required this.item,
     required this.yaruKoto,
     required this.controller,
-    required this.onTap,
   });
 
   final TaskItem item;
   final YaruKoto yaruKoto;
   final YaruKotoController controller;
-  final VoidCallback onTap;
 
   @override
-  State<_TaskItemCard> createState() => _TaskItemCardState();
+  State<_ExpandableTaskItemCard> createState() => _ExpandableTaskItemCardState();
 }
 
-class _TaskItemCardState extends State<_TaskItemCard> {
+class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
+  bool _isExpanded = false;
+
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 1,
+      elevation: 2,
       color: const Color(0xFFF8FCF8),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         side: const BorderSide(color: Color(0xFFE8F5E8)),
       ),
-      child: InkWell(
-        onTap: widget.onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+      child: Column(
+        children: [
+          // 項目ヘッダー部分
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+              });
+            },
+            borderRadius: _isExpanded 
+                ? const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12),
+                  )
+                : BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _getProgressColor(),
-                      border: Border.all(
-                        color: _getProgressBorderColor(),
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        widget.item.progressLabel.split('')[0],
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.item.title,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                            color: Color(0xFF2E7D2E),
+                  Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _getProgressColor(),
+                          border: Border.all(
+                            color: _getProgressBorderColor(),
+                            width: 2,
                           ),
                         ),
-                        if (widget.item.description != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.item.description!,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey,
+                        child: Center(
+                          child: Text(
+                            _getProgressEmojiFromPercentage(widget.item.progressPercentage),
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.item.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                                color: Color(0xFF2E7D2E),
+                              ),
                             ),
+                            if (widget.item.description != null) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.item.description!,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          PopupMenuButton<String>(
+                            icon: const Icon(
+                              Icons.more_vert,
+                              color: Color(0xFF66BB6A),
+                              size: 20,
+                            ),
+                            onSelected: (value) {
+                              switch (value) {
+                                case 'edit':
+                                  _showEditItemDialog(context);
+                                  break;
+                                case 'delete':
+                                  _confirmDeleteItem(context);
+                                  break;
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              const PopupMenuItem(
+                                value: 'edit',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.edit, color: Color(0xFF66BB6A), size: 16),
+                                    SizedBox(width: 8),
+                                    Text('編集', style: TextStyle(fontSize: 14)),
+                                  ],
+                                ),
+                              ),
+                              const PopupMenuItem(
+                                value: 'delete',
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.delete, color: Colors.red, size: 16),
+                                    SizedBox(width: 8),
+                                    Text('削除', style: TextStyle(fontSize: 14)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            _isExpanded ? Icons.expand_less : Icons.expand_more,
+                            color: const Color(0xFF66BB6A),
                           ),
                         ],
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  const SizedBox(height: 12),
+                  LinearProgressIndicator(
+                    value: widget.item.progressPercentage / 100,
+                    backgroundColor: const Color(0xFFE8F5E8),
+                    valueColor: AlwaysStoppedAnimation<Color>(_getProgressBorderColor()),
+                    minHeight: 6,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${widget.item.progressPercentage.toStringAsFixed(0)}%',
+                        '${widget.item.progressPercentage.toStringAsFixed(1)}%',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -377,7 +438,7 @@ class _TaskItemCardState extends State<_TaskItemCard> {
                         ),
                       ),
                       Text(
-                        '${widget.item.tasks.length}個',
+                        '${widget.item.tasks.length}個のタスク',
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -385,31 +446,186 @@ class _TaskItemCardState extends State<_TaskItemCard> {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 8),
-                  InkWell(
-                    onTap: () => _showTaskContextMenu(context),
-                    borderRadius: BorderRadius.circular(20),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Icon(
-                        Icons.more_vert,
-                        color: Color(0xFF66BB6A),
-                        size: 20,
-                      ),
-                    ),
-                  ),
                 ],
               ),
-              const SizedBox(height: 12),
-              LinearProgressIndicator(
-                value: widget.item.progressPercentage / 100,
-                backgroundColor: const Color(0xFFE8F5E8),
-                valueColor: AlwaysStoppedAnimation<Color>(_getProgressBorderColor()),
-                minHeight: 6,
-              ),
-            ],
+            ),
           ),
-        ),
+          
+          // 展開可能なタスクリスト部分
+          if (_isExpanded) ...[
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Color(0xFFE8F5E8)),
+                ),
+              ),
+              child: Column(
+                children: [
+                  // タスクリストヘッダー
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    color: const Color(0xFFF0F7F0),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.task_alt, color: Color(0xFF66BB6A), size: 16),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'タスク',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF2E7D2E),
+                          ),
+                        ),
+                        const Spacer(),
+                        TextButton.icon(
+                          onPressed: () => _showAddTaskDialog(context),
+                          icon: const Icon(Icons.add, color: Color(0xFF66BB6A), size: 16),
+                          label: const Text(
+                            '追加',
+                            style: TextStyle(color: Color(0xFF66BB6A), fontSize: 12),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // タスクリスト
+                  if (widget.item.tasks.isEmpty)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      child: const Column(
+                        children: [
+                          Icon(Icons.task_alt, color: Color(0xFF66BB6A), size: 32),
+                          SizedBox(height: 8),
+                          Text(
+                            'まだタスクがありません',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    ...widget.item.tasks.map((task) => _CompactTaskCard(
+                          task: task,
+                          yaruKoto: widget.yaruKoto,
+                          taskItem: widget.item,
+                          controller: widget.controller,
+                          onProgressTap: () => widget.controller.nextTaskProgress(
+                            widget.yaruKoto.id,
+                            widget.item.id,
+                            task.id,
+                          ),
+                          onEditTap: () => _showEditTaskDialog(context, task),
+                          onDeleteTap: () => _confirmDeleteTask(context, task),
+                        )),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showAddTaskDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AddTaskDialog(
+        onAdd: (title) {
+          widget.controller.addTask(widget.yaruKoto.id, widget.item.id, title);
+        },
+      ),
+    );
+  }
+
+  void _showEditTaskDialog(BuildContext context, Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => EditTaskDialog(
+        initialTitle: task.title,
+        onUpdate: (title) {
+          widget.controller.updateTask(
+            widget.yaruKoto.id,
+            widget.item.id,
+            task.id,
+            title,
+          );
+        },
+      ),
+    );
+  }
+
+  void _confirmDeleteTask(BuildContext context, Task task) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('タスクを削除'),
+        content: Text('「${task.title}」を削除しますか？'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.controller.deleteTask(widget.yaruKoto.id, widget.item.id, task.id);
+              Navigator.of(context).pop();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('削除'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEditItemDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => EditItemDialog(
+        initialTitle: widget.item.title,
+        initialDescription: widget.item.description,
+        onUpdate: (title, description) {
+          widget.controller.updateTaskItem(
+            widget.yaruKoto.id,
+            widget.item.id,
+            title: title,
+            description: description,
+          );
+        },
+      ),
+    );
+  }
+
+  void _confirmDeleteItem(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('項目を削除'),
+        content: Text('「${widget.item.title}」を削除しますか？\n配下のタスクも全て削除されます。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('キャンセル'),
+          ),
+          TextButton(
+            onPressed: () {
+              widget.controller.deleteTaskItem(widget.yaruKoto.id, widget.item.id);
+              Navigator.of(context).pop();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('削除'),
+          ),
+        ],
       ),
     );
   }
@@ -428,87 +644,184 @@ class _TaskItemCardState extends State<_TaskItemCard> {
     return const Color(0xFF2E7D2E);
   }
 
-  void _showTaskContextMenu(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.edit, color: Color(0xFF66BB6A)),
-              title: const Text('名前を編集'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _showEditTaskDialog(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('削除'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _confirmDeleteTask(context);
-              },
-            ),
-          ],
+  String _getProgressEmojiFromPercentage(double percentage) {
+    if (percentage == 0) return '🌰';
+    if (percentage < 100) return '🌱';
+    return '🌳';
+  }
+}
+
+class _CompactTaskCard extends StatelessWidget {
+  const _CompactTaskCard({
+    required this.task,
+    required this.yaruKoto,
+    required this.taskItem,
+    required this.controller,
+    required this.onProgressTap,
+    required this.onEditTap,
+    required this.onDeleteTap,
+  });
+
+  final Task task;
+  final YaruKoto yaruKoto;
+  final TaskItem taskItem;
+  final YaruKotoController controller;
+  final VoidCallback onProgressTap;
+  final VoidCallback onEditTap;
+  final VoidCallback onDeleteTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: _getProgressBorderColor(task.progress).withOpacity(0.3),
+          width: 1,
         ),
       ),
-    );
-  }
-
-  void _showEditTaskDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => EditTaskDialog(
-        initialTitle: widget.item.title,
-        onUpdate: (title) {
-          widget.controller.updateTaskItem(
-            widget.yaruKoto.id, 
-            widget.item.id, 
-            title: title,
-          );
-        },
-      ),
-    );
-  }
-
-  void _confirmDeleteTask(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('項目を削除'),
-        content: Text('「${widget.item.title}」を削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
+      child: Row(
+        children: [
+          // 進捗部分（タップ可能）
+          Expanded(
+            child: GestureDetector(
+              onTap: onProgressTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: _getProgressColor(task.progress),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: _getProgressBorderColor(task.progress),
+                          width: 1,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          _getProgressEmoji(task.progress),
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        task.title.isEmpty ? '（タイトルなし）' : task.title,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: task.title.isEmpty ? Colors.grey : const Color(0xFF2E7D2E),
+                          fontStyle: task.title.isEmpty ? FontStyle.italic : FontStyle.normal,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _getProgressBorderColor(task.progress).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getProgressBorderColor(task.progress),
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text(
+                        task.progress.label,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _getProgressBorderColor(task.progress),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          TextButton(
-            onPressed: () {
-              widget.controller.deleteTaskItem(widget.yaruKoto.id, widget.item.id);
-              Navigator.of(context).pop();
+          // メニューボタン
+          PopupMenuButton<String>(
+            icon: Icon(
+              Icons.more_vert,
+              color: _getProgressBorderColor(task.progress),
+              size: 16,
+            ),
+            onSelected: (value) {
+              switch (value) {
+                case 'edit':
+                  onEditTap();
+                  break;
+                case 'delete':
+                  onDeleteTap();
+                  break;
+              }
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('削除'),
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, color: Color(0xFF66BB6A), size: 16),
+                    SizedBox(width: 8),
+                    Text('編集', style: TextStyle(fontSize: 14)),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: Colors.red, size: 16),
+                    SizedBox(width: 8),
+                    Text('削除', style: TextStyle(fontSize: 14)),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  Color _getProgressColor(TaskProgress progress) {
+    switch (progress) {
+      case TaskProgress.notStarted:
+        return const Color(0xFFF5F5F5);
+      case TaskProgress.inProgress:
+        return const Color(0xFFE8F5E8);
+      case TaskProgress.completed:
+        return const Color(0xFFDCEDC8);
+    }
+  }
+
+  Color _getProgressBorderColor(TaskProgress progress) {
+    switch (progress) {
+      case TaskProgress.notStarted:
+        return const Color(0xFFBDBDBD);
+      case TaskProgress.inProgress:
+        return const Color(0xFF66BB6A);
+      case TaskProgress.completed:
+        return const Color(0xFF2E7D2E);
+    }
+  }
+
+  String _getProgressEmoji(TaskProgress progress) {
+    switch (progress) {
+      case TaskProgress.notStarted:
+        return '🌰';
+      case TaskProgress.inProgress:
+        return '🌱';
+      case TaskProgress.completed:
+        return '🌳';
+    }
   }
 }
 

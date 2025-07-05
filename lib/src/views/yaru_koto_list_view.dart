@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
-import 'yaru_koto_detail_expandable_view.dart';
+import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
 
@@ -168,7 +168,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
   void _navigateToDetail(BuildContext context, YaruKoto yaruKoto) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => YaruKotoDetailExpandableView(
+        builder: (context) => YaruKotoDetailView(
           yaruKoto: yaruKoto,
           controller: widget.controller,
         ),

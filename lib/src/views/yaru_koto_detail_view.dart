@@ -22,9 +22,9 @@ class YaruKotoDetailView extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F9F5),
       appBar: AppBar(
-        title: Text(
-          yaruKoto.title,
-          style: const TextStyle(
+        title: const Text(
+          '一覧へ',
+          style: TextStyle(
             color: Color(0xFF2E7D2E),
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -62,11 +62,7 @@ class YaruKotoDetailView extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: _ProgressCard(yaruKoto: currentYaruKoto),
               ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: _HeaderWidget(),
-              ),
+
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -138,14 +134,6 @@ class _ProgressCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text(
-                yaruKoto.progressLabel,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   yaruKoto.title,
@@ -251,28 +239,7 @@ class _EmptyItemsWidget extends StatelessWidget {
   }
 }
 
-class _HeaderWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: const [
-          Icon(Icons.list_alt, color: Color(0xFF66BB6A)),
-          SizedBox(width: 8),
-          Text(
-            '項目一覧',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2E7D2E),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+
 
 class _ExpandableTaskItemCard extends StatefulWidget {
   const _ExpandableTaskItemCard({
@@ -323,25 +290,6 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                 children: [
                   Row(
                     children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: _getProgressColor(),
-                          border: Border.all(
-                            color: _getProgressBorderColor(),
-                            width: 2,
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            _getProgressEmojiFromPercentage(widget.item.progressPercentage),
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -630,24 +578,11 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
     );
   }
 
-  Color _getProgressColor() {
-    final percentage = widget.item.progressPercentage;
-    if (percentage == 0) return const Color(0xFFF5F5F5);
-    if (percentage < 100) return const Color(0xFFE8F5E8);
-    return const Color(0xFFDCEDC8);
-  }
-
   Color _getProgressBorderColor() {
     final percentage = widget.item.progressPercentage;
     if (percentage == 0) return const Color(0xFFBDBDBD);
     if (percentage < 100) return const Color(0xFF66BB6A);
     return const Color(0xFF2E7D2E);
-  }
-
-  String _getProgressEmojiFromPercentage(double percentage) {
-    if (percentage == 0) return '🌰';
-    if (percentage < 100) return '🌱';
-    return '🌳';
   }
 }
 
@@ -705,8 +640,12 @@ class _CompactTaskCard extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          _getProgressEmoji(task.progress),
-                          style: const TextStyle(fontSize: 12),
+                          task.progress == TaskProgress.completed ? '✓' : '',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: _getProgressBorderColor(task.progress),
+                          ),
                         ),
                       ),
                     ),
@@ -810,17 +749,6 @@ class _CompactTaskCard extends StatelessWidget {
         return const Color(0xFF66BB6A);
       case TaskProgress.completed:
         return const Color(0xFF2E7D2E);
-    }
-  }
-
-  String _getProgressEmoji(TaskProgress progress) {
-    switch (progress) {
-      case TaskProgress.notStarted:
-        return '🌰';
-      case TaskProgress.inProgress:
-        return '🌱';
-      case TaskProgress.completed:
-        return '🌳';
     }
   }
 }

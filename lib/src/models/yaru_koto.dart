@@ -23,6 +23,11 @@ class YaruKoto {
     return totalProgress / items.length;
   }
 
+  /// 全タスク数を計算
+  int get totalTaskCount {
+    return items.fold<int>(0, (sum, item) => sum + item.tasks.length);
+  }
+
   /// 進捗率のラベル
   String get progressLabel {
     final percentage = progressPercentage;

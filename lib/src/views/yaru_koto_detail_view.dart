@@ -155,7 +155,7 @@ class _ProgressCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${yaruKoto.progressPercentage.toStringAsFixed(1)}% (${yaruKoto.items.length}個の項目)',
+            '${yaruKoto.progressPercentage.toStringAsFixed(1)}% (${yaruKoto.totalTaskCount}個のタスク)',
             style: const TextStyle(
               fontSize: 14,
               color: Colors.grey,

@@ -32,25 +32,6 @@
 
 ---
 
-## 🚀 起動方法
-
-```bash
-# 1. リポジトリをクローン
-git clone https://github.com/[YOUR_USERNAME]/yurutasu.git
-cd yurutasu
-
-# 2. パッケージを取得
-flutter pub get
-
-# 3. 環境変数ファイルを作成（AdMob用）
-# .env ファイルをプロジェクトルートに作成し、以下を記載：
-# ANDROID_ADMOB_APP_ID=your_android_app_id
-# IOS_ADMOB_APP_ID=your_ios_app_id
-
-# 4. 実行（エミュレーター or 実機）
-flutter run
-```
-
 ## 📚 ドキュメント
 
 詳細なドキュメントは [`docs/`](./docs/) フォルダに整理されています：

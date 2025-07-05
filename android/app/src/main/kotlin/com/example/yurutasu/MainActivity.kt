@@ -8,7 +8,9 @@ class MainActivity: FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         
-        // ネイティブ広告のファクトリーを登録（一時的にコメントアウト）
+        // Note: Native ad factories are temporarily disabled for development
+        // Uncomment when ready to implement native ads:
+        
         // GoogleMobileAdsPlugin.registerNativeAdFactory(
         //     flutterEngine, 
         //     "listTile", 
@@ -23,6 +25,7 @@ class MainActivity: FlutterActivity() {
     }
     
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        // Corresponding cleanup for native ads (currently disabled)
         // GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "listTile")
         // GoogleMobileAdsPlugin.unregisterNativeAdFactory(flutterEngine, "medium")
         super.cleanUpFlutterEngine(flutterEngine)

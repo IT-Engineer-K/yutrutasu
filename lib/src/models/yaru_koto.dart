@@ -19,7 +19,7 @@ class YaruKoto {
   /// 全体の進捗率を計算（項目の平均値）
   double get progressPercentage {
     if (items.isEmpty) return 0.0;
-    final totalProgress = items.fold<int>(0, (sum, item) => sum + item.progress.value);
+    final totalProgress = items.fold<double>(0, (sum, item) => sum + item.progressPercentage);
     return totalProgress / items.length;
   }
 
@@ -58,14 +58,18 @@ class YaruKoto {
   }
 
   factory YaruKoto.fromJson(Map<String, dynamic> json) {
-    return YaruKoto(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      items: (json['items'] as List)
-          .map((item) => TaskItem.fromJson(item))
-          .toList(),
-      createdAt: DateTime.parse(json['createdAt']),
-    );
+    try {
+      return YaruKoto(
+        id: json['id'] as String? ?? '',
+        title: json['title'] as String? ?? '',
+        description: json['description'] as String?,
+        items: (json['items'] as List<dynamic>? ?? [])
+            .map((item) => TaskItem.fromJson(item as Map<String, dynamic>))
+            .toList(),
+        createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ?? DateTime.now(),
+      );
+    } catch (e) {
+      throw FormatException('Invalid YaruKoto JSON format: $e');
+    }
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
-import 'yaru_koto_detail_view.dart';
+import 'yaru_koto_detail_expandable_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
 
@@ -49,7 +49,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
           ],
         ),
         backgroundColor: const Color(0xFFE8F5E8),
-        foregroundColor: const Color(0xFF2E7D2E), // AppBar全体のテキスト色を設定
+        foregroundColor: const Color(0xFF2E7D2E),
         elevation: 0,
       ),
       body: ListenableBuilder(
@@ -117,9 +117,8 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
             ),
             child: ReorderableListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: widget.controller.yaruKotoList.length + 1, // 余白用のアイテムを追加
+              itemCount: widget.controller.yaruKotoList.length + 1,
               onReorder: (oldIndex, newIndex) {
-                // 最後のアイテム（余白）の場合は並べ替えしない
                 if (oldIndex >= widget.controller.yaruKotoList.length || 
                     newIndex > widget.controller.yaruKotoList.length) {
                   return;
@@ -127,11 +126,10 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                 widget.controller.reorderYaruKoto(oldIndex, newIndex);
               },
               itemBuilder: (context, index) {
-                // 最後のアイテムは余白として表示
                 if (index == widget.controller.yaruKotoList.length) {
                   return Container(
                     key: const ValueKey('spacer'),
-                    height: 80, // FloatingActionButtonとの干渉を避ける余白
+                    height: 80,
                   );
                 }
                 
@@ -170,7 +168,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
   void _navigateToDetail(BuildContext context, YaruKoto yaruKoto) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => YaruKotoDetailView(
+        builder: (context) => YaruKotoDetailExpandableView(
           yaruKoto: yaruKoto,
           controller: widget.controller,
         ),

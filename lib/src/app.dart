@@ -29,15 +29,7 @@ class MyApp extends StatelessWidget {
         final yaruKotoController = YaruKotoController();
         
         return MaterialApp(
-          // Providing a restorationScopeId allows the Navigator built by the
-          // MaterialApp to restore the navigation stack when a user leaves and
-          // returns to the app after it has been killed while running in the
-          // background.
           restorationScopeId: 'app',
-
-          // Provide the generated AppLocalizations to the MaterialApp. This
-          // allows descendant Widgets to display the correct translations
-          // depending on the user's locale.
           localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -45,25 +37,15 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('ja', ''), // 日本語をメインに
-            Locale('en', ''), // English, no country code
+            Locale('ja', ''),
+            Locale('en', ''),
           ],
-
-          // Use AppLocalizations to configure the correct application title
-          // depending on the user's locale.
-          //
-          // The appTitle is defined in .arb files found in the localization
-          // directory.
           onGenerateTitle: (BuildContext context) => 'ゆるたす',
-
-          // Define a light and dark color theme. Then, read the user's
-          // preferred ThemeMode (light, dark, or system default) from the
-          // SettingsController to display the correct theme.
-          theme: ThemeData(
-            primarySwatch: Colors.green,
-            primaryColor: const Color(0xFF66BB6A),
-            fontFamily: 'NotoSansJP', // 日本語フォント
-            useMaterial3: true,
+          theme: ThemeData.light().copyWith(
+            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green).copyWith(
+              primary: const Color(0xFF66BB6A),
+            ),
+            textTheme: const TextTheme().apply(fontFamily: 'NotoSansJP'),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFFE8F5E8),
               foregroundColor: Color(0xFF2E7D2E),
@@ -77,8 +59,13 @@ class MyApp extends StatelessWidget {
             ),
           ),
           darkTheme: ThemeData.dark().copyWith(
-            primaryColor: const Color(0xFF66BB6A),
-            useMaterial3: true,
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.green,
+              brightness: Brightness.dark,
+            ).copyWith(
+              primary: const Color(0xFF66BB6A),
+            ),
+            textTheme: const TextTheme().apply(fontFamily: 'NotoSansJP'),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFF2E4A2E),
               foregroundColor: Color(0xFF81C784),
@@ -92,9 +79,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
           themeMode: settingsController.themeMode,
-
-          // Define a function to handle named routes in order to support
-          // Flutter web url navigation and deep linking.
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(
               settings: routeSettings,

@@ -19,19 +19,16 @@ class YaruKotoDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F5),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           '一覧へ',
-          style: TextStyle(
-            color: Color(0xFF2E7D2E),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: theme.appBarTheme.titleTextStyle,
         ),
-        backgroundColor: const Color(0xFFE8F5E8),
-        foregroundColor: const Color(0xFF2E7D2E),
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0,
       ),
       body: ListenableBuilder(
@@ -66,8 +63,14 @@ class YaruKotoDetailView extends StatelessWidget {
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: currentYaruKoto.items.length,
+                  itemCount: currentYaruKoto.items.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == currentYaruKoto.items.length) {
+                      return Container(
+                        height: 80,
+                      );
+                    }
+                    
                     final item = currentYaruKoto.items[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8),
@@ -84,10 +87,16 @@ class YaruKotoDetailView extends StatelessWidget {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddItemDialog(context),
-        backgroundColor: const Color(0xFF66BB6A),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return FloatingActionButton(
+            onPressed: () => _showAddItemDialog(context),
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            child: const Icon(Icons.add),
+          );
+        }
       ),
     );
   }
@@ -95,15 +104,33 @@ class YaruKotoDetailView extends StatelessWidget {
   void _showAddItemDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('新しい項目を追加'),
-        content: AddItemDialogContent(
-          onSubmit: (title, description) {
-            controller.addTaskItem(yaruKoto.id, title, description: description);
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
+      builder: (context) {
+        final theme = Theme.of(context);
+        final primaryColor = theme.colorScheme.primary;
+        
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.add, color: primaryColor),
+              const SizedBox(width: 8),
+              Text(
+                '新しい項目を追加',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: AddItemDialogContent(
+            onSubmit: (title, description) {
+              controller.addTaskItem(yaruKoto.id, title, description: description);
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
     );
   }
 }
@@ -115,10 +142,11 @@ class _ProgressCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -137,10 +165,10 @@ class _ProgressCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   yaruKoto.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E7D2E),
+                    color: theme.colorScheme.primary,
                   ),
                 ),
               ),
@@ -149,25 +177,25 @@ class _ProgressCard extends StatelessWidget {
           const SizedBox(height: 12),
           LinearProgressIndicator(
             value: yaruKoto.progressPercentage / 100,
-            backgroundColor: const Color(0xFFE8F5E8),
-            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF66BB6A)),
+            backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             minHeight: 8,
           ),
           const SizedBox(height: 8),
           Text(
             '${yaruKoto.progressPercentage.toStringAsFixed(1)}% (${yaruKoto.totalTaskCount}個のタスク)',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           if (yaruKoto.description != null) ...[
             const SizedBox(height: 8),
             Text(
               yaruKoto.description!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey,
+                color: theme.colorScheme.onSurface.withOpacity(0.6),
               ),
             ),
           ],
@@ -184,10 +212,13 @@ class _EmptyItemsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final primaryColor = theme.colorScheme.primary;
+    
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -200,27 +231,27 @@ class _EmptyItemsWidget extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Icon(
+          Icon(
             Icons.folder_open,
             size: 64,
-            color: Color(0xFF66BB6A),
+            color: primaryColor,
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'まだ項目がありません',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF2E7D2E),
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             '項目を追加して、\nタスクを整理しましょう！',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: Colors.grey,
+              color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
           const SizedBox(height: 16),
@@ -229,8 +260,8 @@ class _EmptyItemsWidget extends StatelessWidget {
             icon: const Icon(Icons.add),
             label: const Text('項目を追加'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF66BB6A),
-              foregroundColor: Colors.white,
+              backgroundColor: primaryColor,
+              foregroundColor: theme.colorScheme.onPrimary,
             ),
           ),
         ],
@@ -261,12 +292,13 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 2,
-      color: const Color(0xFFF8FCF8),
+      color: theme.cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFFE8F5E8)),
+        side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
       ),
       child: Column(
         children: [
@@ -296,19 +328,19 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                           children: [
                             Text(
                               widget.item.title,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
-                                color: Color(0xFF2E7D2E),
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                             if (widget.item.description != null) ...[
                               const SizedBox(height: 4),
                               Text(
                                 widget.item.description!,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey,
+                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
                                 ),
                               ),
                             ],
@@ -319,9 +351,9 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           PopupMenuButton<String>(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.more_vert,
-                              color: Color(0xFF66BB6A),
+                              color: theme.colorScheme.primary,
                               size: 20,
                             ),
                             onSelected: (value) {
@@ -335,23 +367,35 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                               }
                             },
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.edit, color: Color(0xFF66BB6A), size: 16),
+                                    Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
                                     SizedBox(width: 8),
-                                    Text('編集', style: TextStyle(fontSize: 14)),
+                                    Text(
+                                      '編集', 
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.colorScheme.onSurface,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: Row(
                                   children: [
-                                    Icon(Icons.delete, color: Colors.red, size: 16),
+                                    Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
                                     SizedBox(width: 8),
-                                    Text('削除', style: TextStyle(fontSize: 14)),
+                                    Text(
+                                      '削除', 
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.colorScheme.onSurface,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -360,7 +404,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                           const SizedBox(width: 8),
                           Icon(
                             _isExpanded ? Icons.expand_less : Icons.expand_more,
-                            color: const Color(0xFF66BB6A),
+                            color: theme.colorScheme.primary,
                           ),
                         ],
                       ),
@@ -369,7 +413,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   const SizedBox(height: 12),
                   LinearProgressIndicator(
                     value: widget.item.progressPercentage / 100,
-                    backgroundColor: const Color(0xFFE8F5E8),
+                    backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
                     valueColor: AlwaysStoppedAnimation<Color>(_getProgressBorderColor()),
                     minHeight: 6,
                   ),
@@ -402,9 +446,9 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
           // 展開可能なタスクリスト部分
           if (_isExpanded) ...[
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 border: Border(
-                  top: BorderSide(color: Color(0xFFE8F5E8)),
+                  top: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
                 ),
               ),
               child: Column(
@@ -412,26 +456,26 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   // タスクリストヘッダー
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    color: const Color(0xFFF0F7F0),
+                    color: theme.colorScheme.primary.withOpacity(0.1),
                     child: Row(
                       children: [
-                        const Icon(Icons.task_alt, color: Color(0xFF66BB6A), size: 16),
+                        Icon(Icons.task_alt, color: theme.colorScheme.primary, size: 16),
                         const SizedBox(width: 8),
-                        const Text(
+                        Text(
                           'タスク',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF2E7D2E),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                         const Spacer(),
                         TextButton.icon(
                           onPressed: () => _showAddTaskDialog(context),
-                          icon: const Icon(Icons.add, color: Color(0xFF66BB6A), size: 16),
-                          label: const Text(
+                          icon: Icon(Icons.add, color: theme.colorScheme.primary, size: 16),
+                          label: Text(
                             '追加',
-                            style: TextStyle(color: Color(0xFF66BB6A), fontSize: 12),
+                            style: TextStyle(color: theme.colorScheme.primary, fontSize: 12),
                           ),
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -447,15 +491,15 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   if (widget.item.tasks.isEmpty)
                     Container(
                       padding: const EdgeInsets.all(16),
-                      child: const Column(
+                      child: Column(
                         children: [
-                          Icon(Icons.task_alt, color: Color(0xFF66BB6A), size: 32),
+                          Icon(Icons.task_alt, color: theme.colorScheme.primary, size: 32),
                           SizedBox(height: 8),
                           Text(
                             'まだタスクがありません',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey,
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -513,22 +557,39 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
   }
 
   void _confirmDeleteTask(BuildContext context, Task task) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('タスクを削除'),
+        title: Row(
+          children: [
+            Icon(Icons.warning, color: theme.colorScheme.error),
+            const SizedBox(width: 8),
+            Text(
+              'タスクを削除',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         content: Text('「${task.title}」を削除しますか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
+            child: Text(
+              'キャンセル',
+              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+            ),
           ),
           TextButton(
             onPressed: () {
               widget.controller.deleteTask(widget.yaruKoto.id, widget.item.id, task.id);
               Navigator.of(context).pop();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
             child: const Text('削除'),
           ),
         ],
@@ -555,22 +616,39 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
   }
 
   void _confirmDeleteItem(BuildContext context) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('項目を削除'),
+        title: Row(
+          children: [
+            Icon(Icons.warning, color: theme.colorScheme.error),
+            const SizedBox(width: 8),
+            Text(
+              '項目を削除',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         content: Text('「${widget.item.title}」を削除しますか？\n配下のタスクも全て削除されます。'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
+            child: Text(
+              'キャンセル',
+              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+            ),
           ),
           TextButton(
             onPressed: () {
               widget.controller.deleteTaskItem(widget.yaruKoto.id, widget.item.id);
               Navigator.of(context).pop();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
             child: const Text('削除'),
           ),
         ],
@@ -579,10 +657,12 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
   }
 
   Color _getProgressBorderColor() {
+    final context = this.context;
+    final theme = Theme.of(context);
     final percentage = widget.item.progressPercentage;
-    if (percentage == 0) return const Color(0xFFBDBDBD);
-    if (percentage < 100) return const Color(0xFF66BB6A);
-    return const Color(0xFF2E7D2E);
+    if (percentage == 0) return theme.colorScheme.onSurface.withOpacity(0.4);
+    if (percentage < 100) return theme.colorScheme.primary;
+    return theme.colorScheme.primary;
   }
 }
 
@@ -607,13 +687,14 @@ class _CompactTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: _getProgressBorderColor(task.progress).withOpacity(0.3),
+          color: _getProgressBorderColor(task.progress, theme).withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -631,10 +712,10 @@ class _CompactTaskCard extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: _getProgressColor(task.progress),
+                        color: _getProgressColor(task.progress, theme),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: _getProgressBorderColor(task.progress),
+                          color: _getProgressBorderColor(task.progress, theme),
                           width: 1,
                         ),
                       ),
@@ -644,7 +725,7 @@ class _CompactTaskCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: _getProgressBorderColor(task.progress),
+                            color: _getProgressBorderColor(task.progress, theme),
                           ),
                         ),
                       ),
@@ -656,7 +737,7 @@ class _CompactTaskCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: task.title.isEmpty ? Colors.grey : const Color(0xFF2E7D2E),
+                          color: task.title.isEmpty ? theme.colorScheme.onSurface.withOpacity(0.5) : theme.colorScheme.primary,
                           fontStyle: task.title.isEmpty ? FontStyle.italic : FontStyle.normal,
                         ),
                       ),
@@ -664,10 +745,10 @@ class _CompactTaskCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getProgressBorderColor(task.progress).withOpacity(0.1),
+                        color: _getProgressBorderColor(task.progress, theme).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _getProgressBorderColor(task.progress),
+                          color: _getProgressBorderColor(task.progress, theme),
                           width: 0.5,
                         ),
                       ),
@@ -675,7 +756,7 @@ class _CompactTaskCard extends StatelessWidget {
                         task.progress.label,
                         style: TextStyle(
                           fontSize: 10,
-                          color: _getProgressBorderColor(task.progress),
+                          color: _getProgressBorderColor(task.progress, theme),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -689,7 +770,7 @@ class _CompactTaskCard extends StatelessWidget {
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_vert,
-              color: _getProgressBorderColor(task.progress),
+              color: _getProgressBorderColor(task.progress, theme),
               size: 16,
             ),
             onSelected: (value) {
@@ -703,23 +784,35 @@ class _CompactTaskCard extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'edit',
                 child: Row(
                   children: [
-                    Icon(Icons.edit, color: Color(0xFF66BB6A), size: 16),
+                    Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
                     SizedBox(width: 8),
-                    Text('編集', style: TextStyle(fontSize: 14)),
+                    Text(
+                      '編集', 
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, color: Colors.red, size: 16),
+                    Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
                     SizedBox(width: 8),
-                    Text('削除', style: TextStyle(fontSize: 14)),
+                    Text(
+                      '削除', 
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -730,25 +823,25 @@ class _CompactTaskCard extends StatelessWidget {
     );
   }
 
-  Color _getProgressColor(TaskProgress progress) {
+  Color _getProgressColor(TaskProgress progress, ThemeData theme) {
     switch (progress) {
       case TaskProgress.notStarted:
-        return const Color(0xFFF5F5F5);
+        return theme.colorScheme.surface;
       case TaskProgress.inProgress:
-        return const Color(0xFFE8F5E8);
+        return theme.colorScheme.primary.withOpacity(0.2);
       case TaskProgress.completed:
-        return const Color(0xFFDCEDC8);
+        return theme.colorScheme.primary.withOpacity(0.3);
     }
   }
 
-  Color _getProgressBorderColor(TaskProgress progress) {
+  Color _getProgressBorderColor(TaskProgress progress, ThemeData theme) {
     switch (progress) {
       case TaskProgress.notStarted:
-        return const Color(0xFFBDBDBD);
+        return theme.colorScheme.onSurface.withOpacity(0.4);
       case TaskProgress.inProgress:
-        return const Color(0xFF66BB6A);
+        return theme.colorScheme.primary;
       case TaskProgress.completed:
-        return const Color(0xFF2E7D2E);
+        return theme.colorScheme.primary;
     }
   }
 }
@@ -775,23 +868,55 @@ class _AddItemDialogContentState extends State<AddItemDialogContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primaryColor = colorScheme.primary;
+    
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         TextField(
           controller: _titleController,
-          decoration: const InputDecoration(
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontSize: 16,
+          ),
+          decoration: InputDecoration(
             labelText: '項目名',
             hintText: '項目名を入力してください',
+            labelStyle: TextStyle(color: primaryColor),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: theme.dividerColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: theme.dividerColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: primaryColor),
+            ),
           ),
           autofocus: true,
         ),
         const SizedBox(height: 16),
         TextField(
           controller: _descriptionController,
-          decoration: const InputDecoration(
+          style: TextStyle(
+            color: theme.colorScheme.onSurface,
+            fontSize: 16,
+          ),
+          decoration: InputDecoration(
             labelText: '説明（任意）',
             hintText: '説明を入力してください',
+            labelStyle: TextStyle(color: primaryColor),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: theme.dividerColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: theme.dividerColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: primaryColor),
+            ),
           ),
           maxLines: 3,
         ),
@@ -801,7 +926,10 @@ class _AddItemDialogContentState extends State<AddItemDialogContent> {
           children: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('キャンセル'),
+              child: Text(
+                'キャンセル',
+                style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+              ),
             ),
             const SizedBox(width: 8),
             ElevatedButton(
@@ -813,8 +941,8 @@ class _AddItemDialogContentState extends State<AddItemDialogContent> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF66BB6A),
-                foregroundColor: Colors.white,
+                backgroundColor: primaryColor,
+                foregroundColor: colorScheme.onPrimary,
               ),
               child: const Text('追加'),
             ),

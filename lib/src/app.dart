@@ -45,7 +45,17 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green).copyWith(
               primary: const Color(0xFF66BB6A),
             ),
-            textTheme: const TextTheme().apply(fontFamily: 'NotoSansJP'),
+            textTheme: const TextTheme().apply(
+              fontFamily: 'NotoSansJP',
+              bodyColor: Color(0xFF424242),
+              displayColor: Color(0xFF424242),
+            ).copyWith(
+              bodyMedium: const TextStyle(
+                color: Color(0xFF424242),
+                fontSize: 16,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFFE8F5E8),
               foregroundColor: Color(0xFF2E7D2E),
@@ -57,6 +67,43 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'NotoSansJP',
               ),
             ),
+            // ダイアログのテーマを設定
+            dialogTheme: const DialogTheme(
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              titleTextStyle: TextStyle(
+                color: Color(0xFF2E7D2E),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansJP',
+              ),
+              contentTextStyle: TextStyle(
+                color: Color(0xFF424242),
+                fontSize: 16,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
+            // ポップアップメニューのテーマを設定
+            popupMenuTheme: const PopupMenuThemeData(
+              color: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              textStyle: TextStyle(
+                color: Color(0xFF424242),
+                fontSize: 14,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
+            // 入力フィールドのテーマを設定
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(
+                color: Color(0xFF66BB6A),
+                fontFamily: 'NotoSansJP',
+              ),
+              hintStyle: TextStyle(
+                color: Color(0xFF9E9E9E),
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
           ),
           darkTheme: ThemeData.dark().copyWith(
             colorScheme: ColorScheme.fromSwatch(
@@ -65,7 +112,17 @@ class MyApp extends StatelessWidget {
             ).copyWith(
               primary: const Color(0xFF66BB6A),
             ),
-            textTheme: const TextTheme().apply(fontFamily: 'NotoSansJP'),
+            textTheme: const TextTheme().apply(
+              fontFamily: 'NotoSansJP',
+              bodyColor: Color(0xFFE0E0E0),
+              displayColor: Color(0xFFE0E0E0),
+            ).copyWith(
+              bodyMedium: const TextStyle(
+                color: Color(0xFFE0E0E0),
+                fontSize: 16,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFF2E4A2E),
               foregroundColor: Color(0xFF81C784),
@@ -74,6 +131,43 @@ class MyApp extends StatelessWidget {
                 color: Color(0xFF81C784),
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
+            // ダークテーマのダイアログテーマを設定
+            dialogTheme: const DialogTheme(
+              backgroundColor: Color(0xFF2E2E2E),
+              surfaceTintColor: Colors.transparent,
+              titleTextStyle: TextStyle(
+                color: Color(0xFF81C784),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'NotoSansJP',
+              ),
+              contentTextStyle: TextStyle(
+                color: Color(0xFFE0E0E0),
+                fontSize: 16,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
+            // ダークテーマのポップアップメニューテーマを設定
+            popupMenuTheme: const PopupMenuThemeData(
+              color: Color(0xFF2E2E2E),
+              surfaceTintColor: Colors.transparent,
+              textStyle: TextStyle(
+                color: Color(0xFFE0E0E0),
+                fontSize: 14,
+                fontFamily: 'NotoSansJP',
+              ),
+            ),
+            // ダークテーマの入力フィールドのテーマを設定
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(
+                color: Color(0xFF66BB6A),
+                fontFamily: 'NotoSansJP',
+              ),
+              hintStyle: TextStyle(
+                color: Color(0xFF757575),
                 fontFamily: 'NotoSansJP',
               ),
             ),

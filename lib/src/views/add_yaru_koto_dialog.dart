@@ -26,6 +26,11 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primaryColor = colorScheme.primary;
+    final hintColor = theme.hintColor;
+    
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
@@ -38,14 +43,14 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.eco, color: Color(0xFF66BB6A)),
+                  Icon(Icons.eco, color: primaryColor),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     '新しいプロジェクト',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF2E7D2E),
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -53,15 +58,24 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 16,
+                ),
+                decoration: InputDecoration(
                   labelText: 'タイトル *',
                   hintText: '例: 今週の目標',
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF66BB6A)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
                   ),
-                  labelStyle: TextStyle(color: Color(0xFF66BB6A)),
-                  hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryColor),
+                  ),
+                  labelStyle: TextStyle(color: primaryColor),
+                  hintStyle: TextStyle(color: hintColor),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -74,15 +88,24 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface,
+                  fontSize: 16,
+                ),
+                decoration: InputDecoration(
                   labelText: 'メモ（任意）',
                   hintText: '例: 毎日少しずつでも...',
-                  border: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF66BB6A)),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
                   ),
-                  labelStyle: TextStyle(color: Color(0xFF66BB6A)),
-                  hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: theme.dividerColor),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: primaryColor),
+                  ),
+                  labelStyle: TextStyle(color: primaryColor),
+                  hintStyle: TextStyle(color: hintColor),
                 ),
                 maxLines: 3,
               ),
@@ -92,17 +115,17 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(
+                    child: Text(
                       'キャンセル',
-                      style: TextStyle(color: Color(0xFF757575)),
+                      style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
                     ),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: _onAddPressed,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF66BB6A),
-                      foregroundColor: Colors.white,
+                      backgroundColor: primaryColor,
+                      foregroundColor: colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     ),
                     child: const Text('追加'),

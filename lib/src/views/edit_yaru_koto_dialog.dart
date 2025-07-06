@@ -36,12 +36,24 @@ class _EditYaruKotoDialogState extends State<EditYaruKotoDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final primaryColor = colorScheme.primary;
+    final hintColor = theme.hintColor;
+    
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.edit, color: Color(0xFF66BB6A)),
-          SizedBox(width: 8),
-          Text('プロジェクトを編集'),
+          Icon(Icons.edit, color: primaryColor),
+          const SizedBox(width: 8),
+          Text(
+            'プロジェクトを編集',
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
       content: Column(
@@ -49,30 +61,48 @@ class _EditYaruKotoDialogState extends State<EditYaruKotoDialog> {
         children: [
           TextField(
             controller: _titleController,
-            decoration: const InputDecoration(
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontSize: 16,
+            ),
+            decoration: InputDecoration(
               labelText: 'プロジェクト名',
               hintText: '例: 読書記録',
-              border: OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF66BB6A)),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: theme.dividerColor),
               ),
-              labelStyle: TextStyle(color: Color(0xFF66BB6A)),
-              hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: theme.dividerColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: primaryColor),
+              ),
+              labelStyle: TextStyle(color: primaryColor),
+              hintStyle: TextStyle(color: hintColor),
             ),
             autofocus: true,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _descriptionController,
-            decoration: const InputDecoration(
+            style: TextStyle(
+              color: theme.colorScheme.onSurface,
+              fontSize: 16,
+            ),
+            decoration: InputDecoration(
               labelText: '説明（任意）',
               hintText: '例: 毎日少しずつ本を読む',
-              border: OutlineInputBorder(),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xFF66BB6A)),
+              border: OutlineInputBorder(
+                borderSide: BorderSide(color: theme.dividerColor),
               ),
-              labelStyle: TextStyle(color: Color(0xFF66BB6A)),
-              hintStyle: TextStyle(color: Color(0xFF9E9E9E)),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: theme.dividerColor),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: primaryColor),
+              ),
+              labelStyle: TextStyle(color: primaryColor),
+              hintStyle: TextStyle(color: hintColor),
             ),
             maxLines: 3,
           ),
@@ -81,7 +111,10 @@ class _EditYaruKotoDialogState extends State<EditYaruKotoDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('キャンセル'),
+          child: Text(
+            'キャンセル',
+            style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+          ),
         ),
         ElevatedButton(
           onPressed: () {
@@ -96,8 +129,8 @@ class _EditYaruKotoDialogState extends State<EditYaruKotoDialog> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF66BB6A),
-            foregroundColor: Colors.white,
+            backgroundColor: primaryColor,
+            foregroundColor: colorScheme.onPrimary,
           ),
           child: const Text('更新'),
         ),

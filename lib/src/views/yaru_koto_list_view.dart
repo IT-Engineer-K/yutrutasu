@@ -24,90 +24,92 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F5), // やさしい緑の背景
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Row(
+        title: Row(
           children: [
             Text(
               '🌱 ゆるたす',
-              style: TextStyle(
-                color: Color(0xFF2E7D2E),
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.appBarTheme.titleTextStyle,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               'プロジェクトリスト',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF4CAF50),
+                color: theme.appBarTheme.foregroundColor?.withOpacity(0.8),
               ),
             ),
           ],
         ),
-        backgroundColor: const Color(0xFFE8F5E8),
-        foregroundColor: const Color(0xFF2E7D2E),
+        backgroundColor: theme.appBarTheme.backgroundColor,
+        foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0,
       ),
       body: ListenableBuilder(
         listenable: widget.controller,
         builder: (context, child) {
           if (widget.controller.isLoading) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Color(0xFF66BB6A)),
-                  SizedBox(height: 16),
-                  Text('読み込み中...', style: TextStyle(color: Color(0xFF66BB6A))),
+                  CircularProgressIndicator(color: theme.colorScheme.primary),
+                  const SizedBox(height: 16),
+                  Text('読み込み中...', style: TextStyle(color: theme.colorScheme.primary)),
                 ],
               ),
             );
           }
 
           if (widget.controller.yaruKotoList.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.eco,
-                    size: 64,
-                    color: Color(0xFFAED581),
+            return Builder(
+              builder: (context) {
+                final theme = Theme.of(context);
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.eco,
+                        size: 64,
+                        color: theme.colorScheme.primary.withOpacity(0.7),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'まだプロジェクトがありません',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '下のボタンで新しいプロジェクトを\n追加してみましょう 🌱',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: theme.colorScheme.primary.withOpacity(0.8),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () => _showAddYaruKotoDialog(context),
+                        icon: const Icon(Icons.add),
+                        label: const Text('最初のプロジェクトを追加'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'まだプロジェクトがありません',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Color(0xFF66BB6A),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    '下のボタンで新しいプロジェクトを\n追加してみましょう 🌱',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFF81C784),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton.icon(
-                    onPressed: () => _showAddYaruKotoDialog(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('最初のプロジェクトを追加'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF66BB6A),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              }
             );
           }
 
@@ -138,7 +140,8 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                   key: ValueKey(yaruKoto.id),
                   yaruKoto: yaruKoto,
                   onTap: () => _navigateToDetail(context, yaruKoto),
-                  onMenuTap: () => _showContextMenu(context, yaruKoto),
+                  onEditTap: () => _showEditYaruKotoDialog(context, yaruKoto),
+                  onDeleteTap: () => _confirmDelete(context, yaruKoto),
                   index: index,
                 );
               },
@@ -146,10 +149,16 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddYaruKotoDialog(context),
-        backgroundColor: const Color(0xFF66BB6A),
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          return FloatingActionButton(
+            onPressed: () => _showAddYaruKotoDialog(context),
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            child: const Icon(Icons.add),
+          );
+        }
       ),
     );
   }
@@ -177,68 +186,45 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
   }
 
   void _confirmDelete(BuildContext context, YaruKoto yaruKoto) {
+    final theme = Theme.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('削除の確認'),
+        title: Row(
+          children: [
+            Icon(Icons.warning, color: theme.colorScheme.error),
+            const SizedBox(width: 8),
+            Text(
+              '削除の確認',
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
         content: Text('「${yaruKoto.title}」を削除しますか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
+            child: Text(
+              'キャンセル',
+              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
+            ),
           ),
           TextButton(
             onPressed: () {
               widget.controller.deleteYaruKoto(yaruKoto.id);
               Navigator.of(context).pop();
             },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('削除'),
+            style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
+            child: Text(
+              '削除',
+              style: TextStyle(color: theme.colorScheme.onPrimary),
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showContextMenu(BuildContext context, YaruKoto yaruKoto) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.edit, color: Color(0xFF66BB6A)),
-              title: const Text('名前を編集'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _showEditYaruKotoDialog(context, yaruKoto);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
-              title: const Text('削除'),
-              onTap: () {
-                Navigator.of(context).pop();
-                _confirmDelete(context, yaruKoto);
-              },
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -266,23 +252,26 @@ class _YaruKotoCard extends StatelessWidget {
     super.key,
     required this.yaruKoto,
     required this.onTap,
-    required this.onMenuTap,
+    required this.onEditTap,
+    required this.onDeleteTap,
     required this.index,
   });
 
   final YaruKoto yaruKoto;
   final VoidCallback onTap;
-  final VoidCallback onMenuTap;
+  final VoidCallback onEditTap;
+  final VoidCallback onDeleteTap;
   final int index;
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final progressPercentage = yaruKoto.progressPercentage;
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      color: Colors.white,
+      color: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: onTap,
@@ -298,26 +287,60 @@ class _YaruKotoCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       yaruKoto.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF2E7D2E),
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      InkWell(
-                        onTap: onMenuTap,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: const Icon(
-                            Icons.more_vert,
-                            color: Color(0xFF81C784),
-                            size: 20,
-                          ),
+                  PopupMenuButton<String>(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'edit':
+                          onEditTap();
+                          break;
+                        case 'delete':
+                          onDeleteTap();
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
+                            SizedBox(width: 8),
+                            Text(
+                              '名前を編集', 
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
+                            SizedBox(width: 8),
+                            Text(
+                              '削除', 
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: theme.colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -328,8 +351,8 @@ class _YaruKotoCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   yaruKoto.description!,
-                  style: const TextStyle(
-                    color: Color(0xFF616161),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
                     fontSize: 14,
                   ),
                 ),
@@ -346,16 +369,16 @@ class _YaruKotoCard extends StatelessWidget {
                           children: [
                             Text(
                               yaruKoto.progressLabel,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF4CAF50),
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                             Text(
                               '${progressPercentage.toStringAsFixed(0)}%',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: Color(0xFF4CAF50),
+                                color: theme.colorScheme.primary,
                               ),
                             ),
                           ],
@@ -363,8 +386,8 @@ class _YaruKotoCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         LinearProgressIndicator(
                           value: progressPercentage / 100,
-                          backgroundColor: const Color(0xFFE8F5E8),
-                          valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF66BB6A)),
+                          backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                          valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                           minHeight: 6,
                         ),
                       ],
@@ -375,9 +398,9 @@ class _YaruKotoCard extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 '項目数: ${yaruKoto.items.length}個',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF757575),
+                  color: theme.colorScheme.onSurface.withOpacity(0.6),
                 ),
               ),
             ],

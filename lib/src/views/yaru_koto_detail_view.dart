@@ -76,26 +76,40 @@ class YaruKotoDetailView extends StatelessWidget {
               ),
 
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  itemCount: currentYaruKoto.items.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == currentYaruKoto.items.length) {
-                      return Container(
-                        height: 80,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: Colors.transparent,
+                  ),
+                  child: ReorderableListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    itemCount: currentYaruKoto.items.length + 1,
+                    onReorder: (oldIndex, newIndex) {
+                      if (oldIndex >= currentYaruKoto.items.length || 
+                          newIndex > currentYaruKoto.items.length) {
+                        return;
+                      }
+                      controller.reorderTaskItems(yaruKoto.id, oldIndex, newIndex);
+                    },
+                    itemBuilder: (context, index) {
+                      if (index == currentYaruKoto.items.length) {
+                        return Container(
+                          key: const ValueKey('spacer'),
+                          height: 80,
+                        );
+                      }
+                      
+                      final item = currentYaruKoto.items[index];
+                      return Padding(
+                        key: ValueKey(item.id),
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: _ExpandableTaskItemCard(
+                          item: item,
+                          yaruKoto: currentYaruKoto,
+                          controller: controller,
+                        ),
                       );
-                    }
-                    
-                    final item = currentYaruKoto.items[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: _ExpandableTaskItemCard(
-                        item: item,
-                        yaruKoto: currentYaruKoto,
-                        controller: controller,
-                      ),
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
             ],
@@ -527,19 +541,41 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                       ),
                     )
                   else
-                    ...widget.item.tasks.map((task) => _CompactTaskCard(
-                          task: task,
-                          yaruKoto: widget.yaruKoto,
-                          taskItem: widget.item,
-                          controller: widget.controller,
-                          onProgressTap: () => widget.controller.nextTaskProgress(
+                    Theme(
+                      data: Theme.of(context).copyWith(
+                        canvasColor: Colors.transparent,
+                      ),
+                      child: ReorderableListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.item.tasks.length,
+                        onReorder: (oldIndex, newIndex) {
+                          widget.controller.reorderTasks(
                             widget.yaruKoto.id,
                             widget.item.id,
-                            task.id,
-                          ),
-                          onEditTap: () => _showEditTaskDialog(context, task),
-                          onDeleteTap: () => _confirmDeleteTask(context, task),
-                        )),
+                            oldIndex,
+                            newIndex,
+                          );
+                        },
+                        itemBuilder: (context, index) {
+                          final task = widget.item.tasks[index];
+                          return _CompactTaskCard(
+                            key: ValueKey(task.id),
+                            task: task,
+                            yaruKoto: widget.yaruKoto,
+                            taskItem: widget.item,
+                            controller: widget.controller,
+                            onProgressTap: () => widget.controller.nextTaskProgress(
+                              widget.yaruKoto.id,
+                              widget.item.id,
+                              task.id,
+                            ),
+                            onEditTap: () => _showEditTaskDialog(context, task),
+                            onDeleteTap: () => _confirmDeleteTask(context, task),
+                          );
+                        },
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -689,6 +725,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
 
 class _CompactTaskCard extends StatelessWidget {
   const _CompactTaskCard({
+    super.key,
     required this.task,
     required this.yaruKoto,
     required this.taskItem,

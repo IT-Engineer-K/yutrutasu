@@ -24,7 +24,7 @@ class YaruKotoDetailView extends StatelessWidget {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          '一覧へ',
+          yaruKoto.title,
           style: theme.appBarTheme.titleTextStyle,
         ),
         backgroundColor: theme.appBarTheme.backgroundColor,
@@ -177,17 +177,7 @@ class _ProjectHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // プロジェクトタイトル
-          Text(
-            yaruKoto.title,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-            ),
-          ),
           if (yaruKoto.description != null) ...[
-            const SizedBox(height: 4),
             Text(
               yaruKoto.description!,
               style: TextStyle(
@@ -195,8 +185,8 @@ class _ProjectHeader extends StatelessWidget {
                 color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),
             ),
+            const SizedBox(height: 16),
           ],
-          const SizedBox(height: 16),
           // 進捗情報
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -58,13 +58,24 @@
 
 ## 🎯 UI コンポーネント
 
+### 角丸（BorderRadius）統一基準
+- **大型カード**: 20px（メインカード、空状態カード）
+- **中型カード**: 16px（項目カード、拡張可能カード）
+- **小型カード**: 12px（タスクカード、ステータスチップ）
+- **ボタン**: 16px（ElevatedButton）、12px（TextButton）
+- **入力フィールド**: 16px
+- **ダイアログ**: 20px
+- **ポップアップメニュー**: 16px
+- **FloatingActionButton**: 20px
+- **プログレスバー**: 3-4px
+
 ### カードデザイン
 ```dart
 Card(
   elevation: 2,
   color: Colors.white,
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(20), // 大型カード
   ),
   child: // コンテンツ
 )
@@ -76,7 +87,7 @@ Card(
   elevation: 1,
   color: const Color(0xFFF8FCF8),
   shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(8),
+    borderRadius: BorderRadius.circular(16), // 中型カード
     side: const BorderSide(color: Color(0xFFE8F5E8)),
   ),
   child: // コンテンツ
@@ -88,6 +99,14 @@ Card(
 ElevatedButton(
   style: ElevatedButton.styleFrom(
     backgroundColor: const Color(0xFF66BB6A),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+  ),
+  child: // テキスト
+)
+```
     foregroundColor: Colors.white,
     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
   ),
@@ -157,7 +176,7 @@ Container(
   padding: const EdgeInsets.all(20),
   decoration: BoxDecoration(
     color: Colors.white,
-    borderRadius: BorderRadius.circular(12),
+    borderRadius: BorderRadius.circular(20), // より丸みを持たせた大型カード
     boxShadow: [
       BoxShadow(
         color: Colors.black.withOpacity(0.1),

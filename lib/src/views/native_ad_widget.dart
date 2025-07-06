@@ -202,7 +202,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: theme.colorScheme.outline.withOpacity(0.2),
             width: 1,

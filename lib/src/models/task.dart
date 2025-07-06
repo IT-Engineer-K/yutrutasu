@@ -1,7 +1,7 @@
 /// 最小単位のタスクを表すEnum
 enum TaskProgress {
   notStarted(0, '未着手'),
-  inProgress(50, 'ちょっとやった'), 
+  inProgress(50, '着手済'), 
   completed(100, '完了');
 
   const TaskProgress(this.value, this.label);

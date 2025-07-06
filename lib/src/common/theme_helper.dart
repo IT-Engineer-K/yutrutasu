@@ -41,13 +41,16 @@ class ThemeHelper {
       labelText: labelText,
       hintText: hintText,
       border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: theme.dividerColor),
       ),
       enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(color: theme.dividerColor),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: primaryColor),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: primaryColor, width: 2),
       ),
       labelStyle: TextStyle(color: primaryColor),
       hintStyle: TextStyle(color: theme.hintColor),

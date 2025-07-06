@@ -126,7 +126,7 @@ class _ProgressCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -168,6 +168,7 @@ class _ProgressCard extends StatelessWidget {
             backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
             valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
             minHeight: 8,
+            borderRadius: BorderRadius.circular(4),
           ),
           const SizedBox(height: 8),
           Text(
@@ -207,7 +208,7 @@ class _EmptyItemsWidget extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -307,7 +308,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
       elevation: 2,
       color: theme.cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
       ),
       child: Column(
@@ -321,10 +322,10 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
             },
             borderRadius: _isExpanded 
                 ? const BorderRadius.only(
-                    topLeft: Radius.circular(12),
-                    topRight: Radius.circular(12),
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   )
-                : BorderRadius.circular(12),
+                : BorderRadius.circular(16),
             child: Container(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -396,6 +397,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                     backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
                     valueColor: AlwaysStoppedAnimation<Color>(_getProgressBorderColor(theme)),
                     minHeight: 6,
+                    borderRadius: BorderRadius.circular(3),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -601,7 +603,7 @@ class _CompactTaskCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _getProgressBorderColor(task.progress, theme).withOpacity(0.3),
           width: 1,
@@ -622,7 +624,7 @@ class _CompactTaskCard extends StatelessWidget {
                       height: 24,
                       decoration: BoxDecoration(
                         color: _getProgressColor(task.progress, theme),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: _getProgressBorderColor(task.progress, theme),
                           width: 1,
@@ -650,7 +652,7 @@ class _CompactTaskCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: _getProgressBorderColor(task.progress, theme).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: _getProgressBorderColor(task.progress, theme),
                           width: 0.5,

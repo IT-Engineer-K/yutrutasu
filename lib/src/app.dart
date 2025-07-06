@@ -45,6 +45,54 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green).copyWith(
               primary: const Color(0xFF66BB6A),
             ),
+            // より丸みを持たせるコンポーネントテーマを追加
+            cardTheme: CardTheme(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(
+                color: Color(0xFF66BB6A),
+                fontFamily: 'NotoSansJP',
+              ),
+              hintStyle: TextStyle(
+                color: Color(0xFF9E9E9E),
+                fontFamily: 'NotoSansJP',
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderSide: BorderSide(color: Color(0xFF66BB6A), width: 2),
+              ),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
+            ),
             textTheme: const TextTheme().apply(
               fontFamily: 'NotoSansJP',
               bodyColor: Color(0xFF424242),
@@ -71,6 +119,9 @@ class MyApp extends StatelessWidget {
             dialogTheme: const DialogTheme(
               backgroundColor: Colors.white,
               surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
               titleTextStyle: TextStyle(
                 color: Color(0xFF2E7D2E),
                 fontSize: 20,
@@ -87,20 +138,12 @@ class MyApp extends StatelessWidget {
             popupMenuTheme: const PopupMenuThemeData(
               color: Colors.white,
               surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
               textStyle: TextStyle(
                 color: Color(0xFF424242),
                 fontSize: 14,
-                fontFamily: 'NotoSansJP',
-              ),
-            ),
-            // 入力フィールドのテーマを設定
-            inputDecorationTheme: const InputDecorationTheme(
-              labelStyle: TextStyle(
-                color: Color(0xFF66BB6A),
-                fontFamily: 'NotoSansJP',
-              ),
-              hintStyle: TextStyle(
-                color: Color(0xFF9E9E9E),
                 fontFamily: 'NotoSansJP',
               ),
             ),
@@ -111,6 +154,54 @@ class MyApp extends StatelessWidget {
               brightness: Brightness.dark,
             ).copyWith(
               primary: const Color(0xFF66BB6A),
+            ),
+            // ダークテーマでも丸みを持たせるコンポーネントテーマを追加
+            cardTheme: CardTheme(
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              ),
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              ),
+            ),
+            inputDecorationTheme: const InputDecorationTheme(
+              labelStyle: TextStyle(
+                color: Color(0xFF66BB6A),
+                fontFamily: 'NotoSansJP',
+              ),
+              hintStyle: TextStyle(
+                color: Color(0xFF757575),
+                fontFamily: 'NotoSansJP',
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderSide: BorderSide(color: Color(0xFF66BB6A), width: 2),
+              ),
+            ),
+            floatingActionButtonTheme: const FloatingActionButtonThemeData(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
             ),
             textTheme: const TextTheme().apply(
               fontFamily: 'NotoSansJP',
@@ -138,6 +229,9 @@ class MyApp extends StatelessWidget {
             dialogTheme: const DialogTheme(
               backgroundColor: Color(0xFF2E2E2E),
               surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+              ),
               titleTextStyle: TextStyle(
                 color: Color(0xFF81C784),
                 fontSize: 20,
@@ -154,20 +248,12 @@ class MyApp extends StatelessWidget {
             popupMenuTheme: const PopupMenuThemeData(
               color: Color(0xFF2E2E2E),
               surfaceTintColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
               textStyle: TextStyle(
                 color: Color(0xFFE0E0E0),
                 fontSize: 14,
-                fontFamily: 'NotoSansJP',
-              ),
-            ),
-            // ダークテーマの入力フィールドのテーマを設定
-            inputDecorationTheme: const InputDecorationTheme(
-              labelStyle: TextStyle(
-                color: Color(0xFF66BB6A),
-                fontFamily: 'NotoSansJP',
-              ),
-              hintStyle: TextStyle(
-                color: Color(0xFF757575),
                 fontFamily: 'NotoSansJP',
               ),
             ),

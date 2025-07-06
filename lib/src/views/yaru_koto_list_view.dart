@@ -283,10 +283,10 @@ class _YaruKotoCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
       color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -400,6 +400,7 @@ class _YaruKotoCard extends StatelessWidget {
                           backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
                           valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                           minHeight: 6,
+                          borderRadius: BorderRadius.circular(3),
                         ),
                       ],
                     ),

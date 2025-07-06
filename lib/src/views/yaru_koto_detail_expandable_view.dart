@@ -633,7 +633,10 @@ class _CompactTaskCard extends StatelessWidget {
                       child: Center(
                         child: Text(
                           _getProgressEmoji(task.progress),
-                          style: const TextStyle(fontSize: 12),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: _getProgressTextColor(task.progress, theme),
+                          ),
                         ),
                       ),
                     ),
@@ -651,7 +654,9 @@ class _CompactTaskCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: _getProgressBorderColor(task.progress, theme).withOpacity(0.1),
+                        color: task.progress == TaskProgress.completed 
+                          ? _getProgressBorderColor(task.progress, theme)
+                          : _getProgressBorderColor(task.progress, theme).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: _getProgressBorderColor(task.progress, theme),
@@ -662,7 +667,7 @@ class _CompactTaskCard extends StatelessWidget {
                         task.progress.label,
                         style: TextStyle(
                           fontSize: 10,
-                          color: _getProgressBorderColor(task.progress, theme),
+                          color: _getProgressTextColor(task.progress, theme),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -724,7 +729,7 @@ class _CompactTaskCard extends StatelessWidget {
       case TaskProgress.inProgress:
         return theme.colorScheme.primary.withOpacity(0.2);
       case TaskProgress.completed:
-        return theme.colorScheme.primary.withOpacity(0.3);
+        return theme.colorScheme.primary; // 完了時は緑色背景
     }
   }
 
@@ -736,6 +741,17 @@ class _CompactTaskCard extends StatelessWidget {
         return theme.colorScheme.primary;
       case TaskProgress.completed:
         return theme.colorScheme.primary;
+    }
+  }
+
+  Color _getProgressTextColor(TaskProgress progress, ThemeData theme) {
+    switch (progress) {
+      case TaskProgress.notStarted:
+        return theme.colorScheme.onSurface.withOpacity(0.4);
+      case TaskProgress.inProgress:
+        return theme.colorScheme.primary;
+      case TaskProgress.completed:
+        return Colors.white; // 完了時は白色
     }
   }
 

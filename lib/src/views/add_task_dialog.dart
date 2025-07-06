@@ -39,7 +39,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             children: [
               ThemeHelper.buildDialogHeader(
                 icon: Icons.add_circle_outline,
-                title: '新しい項目',
+                title: '新しいタスク',
                 context: context,
               ),
               const SizedBox(height: 24),

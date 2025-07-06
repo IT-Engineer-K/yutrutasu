@@ -143,7 +143,7 @@ class YaruKotoDetailView extends StatelessWidget {
               Icon(Icons.add, color: primaryColor),
               const SizedBox(width: 8),
               Text(
-                '新しい項目を追加',
+                '新しい項目',
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
                   fontSize: 20,

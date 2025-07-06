@@ -102,7 +102,7 @@ class YaruKotoDetailExpandableView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('新しい項目を追加'),
+        title: const Text('新しい項目'),
         content: AddItemDialogContent(
           onSubmit: (title, description) {
             controller.addTaskItem(yaruKoto.id, title, description: description);

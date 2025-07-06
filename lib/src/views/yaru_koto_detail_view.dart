@@ -946,7 +946,7 @@ class _AddItemDialogContentState extends State<AddItemDialogContent> {
           ),
           decoration: InputDecoration(
             labelText: '項目名',
-            hintText: '項目名を入力してください',
+            hintText: '例：本題',
             labelStyle: TextStyle(color: primaryColor),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: theme.dividerColor),

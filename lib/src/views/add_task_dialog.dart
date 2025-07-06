@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/theme_helper.dart';
 
 class AddTaskDialog extends StatefulWidget {
   const AddTaskDialog({
@@ -25,9 +26,6 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final primaryColor = colorScheme.primary;
-    final hintColor = theme.hintColor;
     
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -39,19 +37,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.add_circle_outline, color: primaryColor),
-                  const SizedBox(width: 8),
-                  Text(
-                    '新しい項目',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ],
+              ThemeHelper.buildDialogHeader(
+                icon: Icons.add_circle_outline,
+                title: '新しい項目',
+                context: context,
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -60,20 +49,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                   color: theme.colorScheme.onSurface,
                   fontSize: 16,
                 ),
-                decoration: InputDecoration(
+                decoration: ThemeHelper.getTextFieldDecoration(
                   labelText: '項目名 *',
                   hintText: '例: 資料を読む',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
-                  ),
-                  labelStyle: TextStyle(color: primaryColor),
-                  hintStyle: TextStyle(color: hintColor),
+                  context: context,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -94,27 +73,11 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 ),
               ),
               const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(
-                      'キャンセル',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: _onAddPressed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                    child: const Text('追加'),
-                  ),
-                ],
+              ThemeHelper.buildDialogActions(
+                onCancel: () => Navigator.of(context).pop(),
+                onConfirm: _onAddPressed,
+                confirmText: '追加',
+                context: context,
               ),
             ],
           ),

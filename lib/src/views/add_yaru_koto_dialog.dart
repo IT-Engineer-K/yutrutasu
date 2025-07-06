@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../common/theme_helper.dart';
 
 class AddYaruKotoDialog extends StatefulWidget {
   const AddYaruKotoDialog({
@@ -27,9 +28,6 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final primaryColor = colorScheme.primary;
-    final hintColor = theme.hintColor;
     
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -41,19 +39,10 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(Icons.eco, color: primaryColor),
-                  const SizedBox(width: 8),
-                  Text(
-                    '新しいプロジェクト',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ],
+              ThemeHelper.buildDialogHeader(
+                icon: Icons.eco,
+                title: '新しいプロジェクト',
+                context: context,
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -62,20 +51,10 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
                   color: theme.colorScheme.onSurface,
                   fontSize: 16,
                 ),
-                decoration: InputDecoration(
+                decoration: ThemeHelper.getTextFieldDecoration(
                   labelText: 'タイトル *',
                   hintText: '例: 今週の目標',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
-                  ),
-                  labelStyle: TextStyle(color: primaryColor),
-                  hintStyle: TextStyle(color: hintColor),
+                  context: context,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -92,45 +71,19 @@ class _AddYaruKotoDialogState extends State<AddYaruKotoDialog> {
                   color: theme.colorScheme.onSurface,
                   fontSize: 16,
                 ),
-                decoration: InputDecoration(
-                  labelText: 'メモ（任意）',
-                  hintText: '例: 毎日少しずつでも...',
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: theme.dividerColor),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: primaryColor),
-                  ),
-                  labelStyle: TextStyle(color: primaryColor),
-                  hintStyle: TextStyle(color: hintColor),
+                decoration: ThemeHelper.getTextFieldDecoration(
+                  labelText: '説明',
+                  hintText: '詳細説明（任意）',
+                  context: context,
                 ),
                 maxLines: 3,
               ),
               const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: Text(
-                      'キャンセル',
-                      style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: _onAddPressed,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    ),
-                    child: const Text('追加'),
-                  ),
-                ],
+              ThemeHelper.buildDialogActions(
+                onCancel: () => Navigator.of(context).pop(),
+                onConfirm: _onAddPressed,
+                confirmText: '追加',
+                context: context,
               ),
             ],
           ),

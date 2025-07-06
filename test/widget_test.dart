@@ -1,31 +1,50 @@
-// This is an example Flutter widget test.
+// ゆるたす - ウィジェットテスト
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-//
-// Visit https://flutter.dev/to/widget-testing for
-// more information about Widget testing.
+// このファイルはUIコンポーネントの動作をテストします。
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:yurutasu/src/app.dart';
+import 'package:yurutasu/src/settings/settings_controller.dart';
+import 'package:yurutasu/src/settings/settings_service.dart';
 
 void main() {
-  group('MyWidget', () {
-    testWidgets('should display a string of text', (WidgetTester tester) async {
-      // Define a Widget
-      const myWidget = MaterialApp(
-        home: Scaffold(
-          body: Text('Hello'),
-        ),
-      );
+  group('YurutasuApp Widget Tests', () {
+    testWidgets('アプリが正常に起動する', (WidgetTester tester) async {
+      // テスト用の設定コントローラーを作成
+      final settingsController = SettingsController(SettingsService());
+      await settingsController.loadSettings();
 
-      // Build myWidget and trigger a frame.
-      await tester.pumpWidget(myWidget);
+      // アプリウィジェットをビルド
+      await tester.pumpWidget(MyApp(settingsController: settingsController));
 
-      // Verify myWidget shows some text
-      expect(find.byType(Text), findsOneWidget);
+      // アプリバーのタイトルが表示されることを確認
+      expect(find.text('🌱 ゆるたす'), findsOneWidget);
+      expect(find.text('プロジェクトリスト'), findsOneWidget);
+    });
+
+    testWidgets('初期状態でプロジェクトが空の場合のメッセージ表示', (WidgetTester tester) async {
+      final settingsController = SettingsController(SettingsService());
+      await settingsController.loadSettings();
+
+      await tester.pumpWidget(MyApp(settingsController: settingsController));
+      await tester.pump(); // pumpAndSettleを使わずにpumpを使用
+
+      // 空の状態のメッセージが表示されることを確認
+      expect(find.text('まだプロジェクトがありません'), findsOneWidget);
+      expect(find.text('下のボタンで新しいプロジェクトを\n追加してみましょう 🌱'), findsOneWidget);
+    });
+
+    testWidgets('フローティングアクションボタンが表示される', (WidgetTester tester) async {
+      final settingsController = SettingsController(SettingsService());
+      await settingsController.loadSettings();
+
+      await tester.pumpWidget(MyApp(settingsController: settingsController));
+      await tester.pump(); // pumpAndSettleを使わずにpumpを使用
+
+      // フローティングアクションボタンが表示されることを確認
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsOneWidget);
     });
   });
 }

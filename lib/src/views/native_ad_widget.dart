@@ -2,15 +2,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/admob_service.dart';
+import 'widgets/ad_widget_constants.dart';
 
+/// ネイティブ広告を表示するウィジェット
+/// 
+/// 自動的に広告を読み込み、エラー状態やリトライ機能を提供します。
 class NativeAdWidget extends StatefulWidget {
-  final String? factoryId;
-  final double? height;
+  /// 広告ファクトリーID（ネイティブ広告のレイアウト用）
+  final String factoryId;
+  
+  /// ウィジェットの高さ
+  final double height;
+  
+  /// 読み込みタイムアウト時間
+  final Duration timeout;
 
   const NativeAdWidget({
     super.key,
-    this.factoryId = 'listTile',
-    this.height = 320,
+    this.factoryId = AdWidgetConstants.defaultFactoryId,
+    this.height = AdWidgetConstants.defaultHeight,
+    this.timeout = AdWidgetConstants.loadTimeout,
   });
 
   @override
@@ -19,10 +30,12 @@ class NativeAdWidget extends StatefulWidget {
 
 class _NativeAdWidgetState extends State<NativeAdWidget> {
   NativeAd? _nativeAd;
-  bool _isAdLoaded = false;
-  bool _isAdFailed = false;
-  String? _errorMessage;
-  Timer? _loadingTimer;
+  AdLoadState _loadState = AdLoadState.initial;
+  NativeAdError? _lastError;
+  Timer? _timeoutTimer;
+  Timer? _retryTimer;
+  int _retryCount = 0;
+  static const int maxRetries = 3;
 
   @override
   void initState() {
@@ -30,185 +43,321 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
     _loadAd();
   }
 
-  void _loadAd() {
+  @override
+  void dispose() {
+    _cleanupResources();
+    super.dispose();
+  }
+
+  /// リソースをクリーンアップ
+  void _cleanupResources() {
+    _timeoutTimer?.cancel();
+    _retryTimer?.cancel();
+    _nativeAd?.dispose();
+  }
+
+  /// 広告を読み込む
+  Future<void> _loadAd() async {
+    if (!mounted) return;
+
     try {
-      // リセット状態
+      _cleanupResources();
+      
       setState(() {
-        _isAdLoaded = false;
-        _isAdFailed = false;
-        _errorMessage = null;
+        _loadState = AdLoadState.loading;
+        _lastError = null;
       });
 
-      // 既存の広告があれば破棄
-      _nativeAd?.dispose();
-      _loadingTimer?.cancel();
-
-      // 30秒でタイムアウト
-      _loadingTimer = Timer(const Duration(seconds: 30), () {
-        if (!_isAdLoaded && mounted) {
-          setState(() {
-            _isAdFailed = true;
-            _errorMessage = 'タイムアウト: 広告の読み込みに時間がかかりすぎています';
-          });
-          _nativeAd?.dispose();
+      // タイムアウト設定
+      _timeoutTimer = Timer(widget.timeout, () {
+        if (_loadState == AdLoadState.loading && mounted) {
+          _handleTimeout();
         }
       });
 
+      // 新しい広告を作成
       _nativeAd = AdMobService.instance.createNativeAd(
         factoryId: widget.factoryId,
-        listener: NativeAdListener(
-          onAdLoaded: (ad) {
-            debugPrint('Native ad loaded successfully');
-            _loadingTimer?.cancel();
-            if (mounted) {
-              setState(() {
-                _isAdLoaded = true;
-                _isAdFailed = false;
-                _errorMessage = null;
-              });
-            }
-          },
-          onAdFailedToLoad: (ad, error) {
-            debugPrint('Native ad failed to load: $error');
-            _loadingTimer?.cancel();
-            ad.dispose();
-            if (mounted) {
-              setState(() {
-                _isAdLoaded = false;
-                _isAdFailed = true;
-                _errorMessage = 'エラー: ${error.message}';
-              });
-            }
-          },
-          onAdOpened: (ad) {
-            debugPrint('Native ad opened');
-          },
-          onAdClosed: (ad) {
-            debugPrint('Native ad closed');
-          },
-          onAdImpression: (ad) {
-            debugPrint('Native ad impression');
-          },
-        onAdClicked: (ad) {
-          debugPrint('Native ad clicked');
-        },
-      ),
-    );
+        listener: _createAdListener(),
+      );
 
-    _nativeAd?.load();
+      await _nativeAd?.load();
+      
     } catch (e) {
-      debugPrint('Error creating native ad: $e');
-      if (mounted) {
-        setState(() {
-          _isAdFailed = true;
-          _errorMessage = 'エラー: 広告の作成に失敗しました';
-        });
-      }
+      _handleError(NativeAdError(
+        type: AdErrorType.general,
+        message: '広告の作成に失敗しました',
+        details: e.toString(),
+      ));
     }
   }
 
-  @override
-  void dispose() {
-    _loadingTimer?.cancel();
-    _nativeAd?.dispose();
-    super.dispose();
+  /// 広告リスナーを作成
+  NativeAdListener _createAdListener() {
+    return NativeAdListener(
+      onAdLoaded: (ad) {
+        debugPrint('Native ad loaded successfully');
+        _timeoutTimer?.cancel();
+        
+        if (mounted) {
+          setState(() {
+            _loadState = AdLoadState.loaded;
+            _lastError = null;
+            _retryCount = 0;
+          });
+        }
+      },
+      onAdFailedToLoad: (ad, error) {
+        debugPrint('Native ad failed to load: $error');
+        _timeoutTimer?.cancel();
+        ad.dispose();
+        
+        if (mounted) {
+          _handleLoadError(error);
+        }
+      },
+      onAdOpened: (ad) {
+        debugPrint('Native ad opened');
+      },
+      onAdClosed: (ad) {
+        debugPrint('Native ad closed');
+      },
+      onAdImpression: (ad) {
+        debugPrint('Native ad impression');
+      },
+      onAdClicked: (ad) {
+        debugPrint('Native ad clicked');
+      },
+    );
+  }
+
+  /// タイムアウト処理
+  void _handleTimeout() {
+    final error = NativeAdError(
+      type: AdErrorType.timeout,
+      message: 'タイムアウト',
+      details: '${widget.timeout.inSeconds}秒以内に読み込みが完了しませんでした',
+    );
+    
+    _handleError(error);
+  }
+
+  /// 読み込みエラー処理
+  void _handleLoadError(LoadAdError error) {
+    AdErrorType errorType;
+    switch (error.code) {
+      case 0: // ERROR_CODE_INTERNAL_ERROR
+        errorType = AdErrorType.general;
+        break;
+      case 1: // ERROR_CODE_INVALID_REQUEST
+        errorType = AdErrorType.configuration;
+        break;
+      case 2: // ERROR_CODE_NETWORK_ERROR
+        errorType = AdErrorType.network;
+        break;
+      case 3: // ERROR_CODE_NO_FILL
+        errorType = AdErrorType.general;
+        break;
+      default:
+        errorType = AdErrorType.general;
+    }
+
+    _handleError(NativeAdError(
+      type: errorType,
+      message: error.message,
+      details: 'Code: ${error.code}',
+    ));
+  }
+
+  /// エラー処理
+  void _handleError(NativeAdError error) {
+    debugPrint('Native ad error: ${error.debugMessage}');
+    
+    if (mounted) {
+      setState(() {
+        _loadState = AdLoadState.failed;
+        _lastError = error;
+      });
+    }
+
+    // 自動リトライ（最大回数まで）
+    if (_retryCount < maxRetries && error.type == AdErrorType.network) {
+      _scheduleRetry();
+    }
+  }
+
+  /// リトライをスケジュール
+  void _scheduleRetry() {
+    _retryTimer = Timer(AdWidgetConstants.retryDelay, () {
+      if (mounted) {
+        _retryCount++;
+        _loadAd();
+      }
+    });
+  }
+
+  /// 手動リトライ
+  void _manualRetry() {
+    _retryCount = 0;
+    _loadAd();
   }
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      height: widget.height,
+      margin: const EdgeInsets.symmetric(
+        horizontal: AdWidgetConstants.horizontalMargin,
+        vertical: AdWidgetConstants.verticalMargin,
+      ),
+      child: _buildContent(context),
+    );
+  }
+
+  /// コンテンツを構築
+  Widget _buildContent(BuildContext context) {
+    switch (_loadState) {
+      case AdLoadState.initial:
+      case AdLoadState.loading:
+        return _buildLoadingWidget(context);
+      case AdLoadState.loaded:
+        return _buildAdWidget(context);
+      case AdLoadState.failed:
+      case AdLoadState.timeout:
+        return _buildErrorWidget(context);
+    }
+  }
+
+  /// 読み込み中ウィジェット
+  Widget _buildLoadingWidget(BuildContext context) {
     final theme = Theme.of(context);
     
-    if (_nativeAd != null && _isAdLoaded) {
-      return Container(
-        height: widget.height,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
-            width: 1,
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(
+          AdWidgetConstants.surfaceOpacity,
+        ),
+        borderRadius: BorderRadius.circular(AdWidgetConstants.borderRadius),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(
+            AdWidgetConstants.loadingBorderOpacity,
           ),
+          width: AdWidgetConstants.borderWidth,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: AdWidget(ad: _nativeAd!),
+      ),
+      child: const Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
-      );
-    } else if (_isAdFailed) {
-      // エラー状態の表示
-      return Container(
-        height: widget.height,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: theme.colorScheme.error.withOpacity(0.3),
-            width: 1,
+      ),
+    );
+  }
+
+  /// 広告ウィジェット
+  Widget _buildAdWidget(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    if (_nativeAd == null) {
+      return _buildErrorWidget(context);
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AdWidgetConstants.borderRadius),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(
+            AdWidgetConstants.outlineOpacity,
           ),
+          width: AdWidgetConstants.borderWidth,
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: theme.colorScheme.error.withOpacity(0.7),
-                size: 24,
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AdWidgetConstants.borderRadius),
+        child: AdWidget(ad: _nativeAd!),
+      ),
+    );
+  }
+
+  /// エラーウィジェット
+  Widget _buildErrorWidget(BuildContext context) {
+    final theme = Theme.of(context);
+    final error = _lastError;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer.withOpacity(
+          AdWidgetConstants.errorContainerOpacity,
+        ),
+        borderRadius: BorderRadius.circular(AdWidgetConstants.borderRadius),
+        border: Border.all(
+          color: theme.colorScheme.error.withOpacity(
+            AdWidgetConstants.outlineOpacity,
+          ),
+          width: AdWidgetConstants.borderWidth,
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: theme.colorScheme.error.withOpacity(
+                AdWidgetConstants.errorIconOpacity,
               ),
-              const SizedBox(height: 8),
+              size: AdWidgetConstants.errorIconSize,
+            ),
+            const SizedBox(height: AdWidgetConstants.spacingMedium),
+            Text(
+              'ネイティブ広告の読み込みに失敗',
+              style: TextStyle(
+                fontSize: AdWidgetConstants.errorTitleFontSize,
+                color: theme.colorScheme.error.withOpacity(
+                  AdWidgetConstants.errorTextOpacity,
+                ),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            if (error != null) ...[
+              const SizedBox(height: AdWidgetConstants.spacingSmall),
               Text(
-                'ネイティブ広告の読み込みに失敗',
+                error.userMessage,
                 style: TextStyle(
-                  fontSize: 12,
-                  color: theme.colorScheme.error.withOpacity(0.8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              if (_errorMessage != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  _errorMessage!,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: theme.colorScheme.error.withOpacity(0.6),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              const SizedBox(height: 8),
-              TextButton(
-                onPressed: _loadAd,
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  minimumSize: Size.zero,
-                ),
-                child: Text(
-                  'リトライ',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: theme.colorScheme.primary,
+                  fontSize: AdWidgetConstants.errorMessageFontSize,
+                  color: theme.colorScheme.error.withOpacity(
+                    AdWidgetConstants.errorMessageOpacity,
                   ),
                 ),
+                textAlign: TextAlign.center,
               ),
             ],
-          ),
+            const SizedBox(height: AdWidgetConstants.spacingMedium),
+            _buildRetryButton(context),
+          ],
         ),
-      );
-    } else {
-      // 読み込み中は空のコンテナを表示（アニメーションなし）
-      return Container(
-        height: widget.height,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.2),
-            width: 1,
-          ),
+      ),
+    );
+  }
+
+  /// リトライボタン
+  Widget _buildRetryButton(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return TextButton(
+      onPressed: _manualRetry,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        minimumSize: Size.zero,
+      ),
+      child: Text(
+        'リトライ',
+        style: TextStyle(
+          fontSize: AdWidgetConstants.retryButtonFontSize,
+          color: theme.colorScheme.primary,
         ),
-      );
-    }
+      ),
+    );
   }
 }

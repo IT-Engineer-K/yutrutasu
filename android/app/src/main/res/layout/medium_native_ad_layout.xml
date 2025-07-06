@@ -44,13 +44,13 @@
                     android:ellipsize="end" />
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:text="広告"
                     android:textSize="10sp"
                     android:textColor="#999999"
                     android:background="#EEEEEE"
-                    android:padding="4dp"
+                    android:gravity="center"
                     android:layout_marginStart="8dp" />
 
             </LinearLayout>

@@ -137,9 +137,13 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                       if (index == widget.controller.yaruKotoList.length) {
                         return Container(
                           key: const ValueKey('native_ad'),
-                          child: const NativeAdWidget(
-                            factoryId: 'listTile',
-                            height: 200,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: AspectRatio(
+                            aspectRatio: 1.0, // 縦横比1:1に設定
+                            child: const NativeAdWidget(
+                              factoryId: 'listTile',
+                              height: 200, // AspectRatioで実際のサイズは制御される
+                            ),
                           ),
                         );
                       }
@@ -292,133 +296,135 @@ class _YaruKotoCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      yaruKoto.title,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        yaruKoto.title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.primary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_vert,
                         color: theme.colorScheme.primary,
+                        size: 20,
                       ),
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: theme.colorScheme.primary,
-                      size: 20,
-                    ),
-                    onSelected: (value) {
-                      switch (value) {
-                        case 'edit':
-                          onEditTap();
-                          break;
-                        case 'delete':
-                          onDeleteTap();
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
-                            SizedBox(width: 8),
-                            Text(
-                              '名前を編集', 
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: theme.colorScheme.onSurface,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            onEditTap();
+                            break;
+                          case 'delete':
+                            onDeleteTap();
+                            break;
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: [
+                              Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
+                              const SizedBox(width: 8),
+                              Text(
+                                '名前を編集', 
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: theme.colorScheme.onSurface,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
-                            SizedBox(width: 8),
-                            Text(
-                              '削除', 
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: theme.colorScheme.onSurface,
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
+                              const SizedBox(width: 8),
+                              Text(
+                                '削除', 
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: theme.colorScheme.onSurface,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              if (yaruKoto.description?.isNotEmpty == true) ...[
-                const SizedBox(height: 4),
-                Text(
-                  yaruKoto.description!,
-                  style: TextStyle(
-                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              yaruKoto.progressLabel,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                            Text(
-                              '${progressPercentage.toStringAsFixed(0)}%',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        LinearProgressIndicator(
-                          value: progressPercentage / 100,
-                          backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-                          valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-                          minHeight: 6,
-                          borderRadius: BorderRadius.circular(3),
+                            ],
+                          ),
                         ),
                       ],
                     ),
+                  ],
+                ),
+                if (yaruKoto.description?.isNotEmpty == true) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    yaruKoto.description!,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withOpacity(0.6),
+                      fontSize: 14,
+                    ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'タスク数: ${yaruKoto.totalTaskCount}個',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                yaruKoto.progressLabel,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              Text(
+                                '${progressPercentage.toStringAsFixed(0)}%',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          LinearProgressIndicator(
+                            value: progressPercentage / 100,
+                            backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                            minHeight: 6,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  'タスク数: ${yaruKoto.totalTaskCount}個',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.colorScheme.onSurface.withOpacity(0.6),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
   }
 }

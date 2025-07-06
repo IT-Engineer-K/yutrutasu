@@ -4,6 +4,7 @@ import '../controllers/yaru_koto_controller.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
+import 'native_ad_widget.dart';
 
 class YaruKotoListView extends StatefulWidget {
   const YaruKotoListView({super.key, required this.controller});
@@ -113,39 +114,52 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
             );
           }
 
-          return Theme(
-            data: Theme.of(context).copyWith(
-              canvasColor: Colors.transparent,
-            ),
-            child: ReorderableListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: widget.controller.yaruKotoList.length + 1,
-              onReorder: (oldIndex, newIndex) {
-                if (oldIndex >= widget.controller.yaruKotoList.length || 
-                    newIndex > widget.controller.yaruKotoList.length) {
-                  return;
-                }
-                widget.controller.reorderYaruKoto(oldIndex, newIndex);
-              },
-              itemBuilder: (context, index) {
-                if (index == widget.controller.yaruKotoList.length) {
-                  return Container(
-                    key: const ValueKey('spacer'),
-                    height: 80,
-                  );
-                }
-                
-                final yaruKoto = widget.controller.yaruKotoList[index];
-                return _YaruKotoCard(
-                  key: ValueKey(yaruKoto.id),
-                  yaruKoto: yaruKoto,
-                  onTap: () => _navigateToDetail(context, yaruKoto),
-                  onEditTap: () => _showEditYaruKotoDialog(context, yaruKoto),
-                  onDeleteTap: () => _confirmDelete(context, yaruKoto),
-                  index: index,
-                );
-              },
-            ),
+          return Column(
+            children: [
+              Expanded(
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: Colors.transparent,
+                  ),
+                  child: ReorderableListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: widget.controller.yaruKotoList.length + 1, // +1 for native ad
+                    onReorder: (oldIndex, newIndex) {
+                      // ネイティブ広告のインデックスは並び替えの対象外
+                      if (oldIndex >= widget.controller.yaruKotoList.length || 
+                          newIndex > widget.controller.yaruKotoList.length) {
+                        return;
+                      }
+                      widget.controller.reorderYaruKoto(oldIndex, newIndex);
+                    },
+                    itemBuilder: (context, index) {
+                      // 最後のアイテムの場合はネイティブ広告を表示
+                      if (index == widget.controller.yaruKotoList.length) {
+                        return Container(
+                          key: const ValueKey('native_ad'),
+                          child: const NativeAdWidget(
+                            factoryId: 'listTile',
+                            height: 200,
+                          ),
+                        );
+                      }
+                      
+                      final yaruKoto = widget.controller.yaruKotoList[index];
+                      return _YaruKotoCard(
+                        key: ValueKey(yaruKoto.id),
+                        yaruKoto: yaruKoto,
+                        onTap: () => _navigateToDetail(context, yaruKoto),
+                        onEditTap: () => _showEditYaruKotoDialog(context, yaruKoto),
+                        onDeleteTap: () => _confirmDelete(context, yaruKoto),
+                        index: index,
+                      );
+                    },
+                  ),
+                ),
+              ),
+              // FloatingActionButtonとの間隔を確保
+              const SizedBox(height: 16),
+            ],
           );
         },
       ),

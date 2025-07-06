@@ -394,7 +394,7 @@ class _YaruKotoCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                '項目数: ${yaruKoto.items.length}個',
+                'タスク数: ${yaruKoto.totalTaskCount}個',
                 style: TextStyle(
                   fontSize: 12,
                   color: theme.colorScheme.onSurface.withOpacity(0.6),

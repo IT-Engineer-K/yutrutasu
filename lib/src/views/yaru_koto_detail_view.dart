@@ -43,7 +43,15 @@ class YaruKotoDetailView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _ProgressCard(yaruKoto: currentYaruKoto),
+                  _ProjectHeader(yaruKoto: currentYaruKoto),
+                  const SizedBox(height: 16),
+                  // 区切り線
+                  Container(
+                    height: 1,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.outline.withOpacity(0.2),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   _EmptyItemsWidget(
                     onAddItem: () => _showAddItemDialog(context),
@@ -55,14 +63,21 @@ class YaruKotoDetailView extends StatelessWidget {
 
           return Column(
             children: [
+              // プロジェクト情報ヘッダー
+              _ProjectHeader(yaruKoto: currentYaruKoto),
+              
+              // 区切り線
               Container(
-                padding: const EdgeInsets.all(16),
-                child: _ProgressCard(yaruKoto: currentYaruKoto),
+                height: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.outline.withOpacity(0.2),
+                ),
               ),
 
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   itemCount: currentYaruKoto.items.length + 1,
                   itemBuilder: (context, index) {
                     if (index == currentYaruKoto.items.length) {
@@ -135,8 +150,8 @@ class YaruKotoDetailView extends StatelessWidget {
   }
 }
 
-class _ProgressCard extends StatelessWidget {
-  const _ProgressCard({required this.yaruKoto});
+class _ProjectHeader extends StatelessWidget {
+  const _ProjectHeader({required this.yaruKoto});
 
   final YaruKoto yaruKoto;
 
@@ -145,36 +160,52 @@ class _ProgressCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // プロジェクトタイトル
+          Text(
+            yaruKoto.title,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          if (yaruKoto.description != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              yaruKoto.description!,
+              style: TextStyle(
+                fontSize: 16,
+                color: theme.colorScheme.onSurface.withOpacity(0.7),
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          // 進捗情報
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  yaruKoto.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
+              Text(
+                yaruKoto.progressLabel,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              Text(
+                '${yaruKoto.progressPercentage.toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.primary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           LinearProgressIndicator(
             value: yaruKoto.progressPercentage / 100,
             backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
@@ -183,22 +214,12 @@ class _ProgressCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${yaruKoto.progressPercentage.toStringAsFixed(1)}% (${yaruKoto.totalTaskCount}個のタスク)',
+            '${yaruKoto.totalTaskCount}個のタスク',
             style: TextStyle(
               fontSize: 14,
               color: theme.colorScheme.onSurface.withOpacity(0.6),
             ),
           ),
-          if (yaruKoto.description != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              yaruKoto.description!,
-              style: TextStyle(
-                fontSize: 14,
-                color: theme.colorScheme.onSurface.withOpacity(0.6),
-              ),
-            ),
-          ],
         ],
       ),
     );

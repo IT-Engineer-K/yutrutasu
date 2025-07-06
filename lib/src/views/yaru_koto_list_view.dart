@@ -219,10 +219,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
               Navigator.of(context).pop();
             },
             style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
-            child: Text(
-              '削除',
-              style: TextStyle(color: theme.colorScheme.onPrimary),
-            ),
+            child: const Text('削除'),
           ),
         ],
       ),

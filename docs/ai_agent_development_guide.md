@@ -21,7 +21,11 @@ lib/src/
 └── views/           # UI コンポーネント
     ├── yaru_koto_list_view.dart
     ├── yaru_koto_detail_view.dart
-    └── task_item_detail_view.dart
+    ├── task_item_detail_view.dart
+    └── widgets/         # 再利用可能なウィジェット
+        ├── animated_percentage_text.dart
+        ├── smooth_animated_linear_progress_indicator.dart
+        └── animated_progress_info.dart
 ```
 
 ### データフロー
@@ -44,16 +48,22 @@ lib/src/
 - すべてのエンティティでUUIDを使用
 - `_uuid.v4()`で生成
 
+### アニメーション進捗表示
+- **AnimatedPercentageText**: 進捗率数値のアニメーション（30.5%形式）
+- **SmoothAnimatedLinearProgressIndicator**: 滑らかな進捗バー
+- **AnimatedProgressInfo**: ラベル付き進捗表示の統合ウィジェット
+- アニメーション時間: 500ms、変化時のみアニメーション実行
+
 ## 🛠️ 開発ワークフロー
 
 ### 新機能追加時のステップ
 1. **モデル**: 必要に応じてプロパティ追加・JSONシリアライゼーション更新
 2. **コントローラー**: CRUD操作メソッド追加・エラーハンドリング実装
 3. **サービス**: データ永続化処理・例外処理
-4. **ビュー**: UI実装・アクセシビリティ対応
+4. **ビュー**: UI実装・アクセシビリティ対応・アニメーション対応
 5. **エラーハンドリング**: try-catch実装
 6. **検証**: `flutter analyze`による静的解析・実機動作確認
-7. **テスト**: 実機での動作確認
+7. **テスト**: 実機での動作確認・アニメーション動作確認
 
 ### コントローラーメソッドの命名規則
 - `add{Entity}()`: 追加
@@ -75,6 +85,7 @@ lib/src/
 - **コメント**: 必要最小限、わかりやすいコードを書く
 - **Import**: 相対パス使用、アルファベット順
 - **型注釈**: 明示的に記述
+- **アニメーション**: 一貫性のため専用ウィジェット使用（LinearProgressIndicator直接使用禁止）
 
 ## 🔍 デバッグガイド
 

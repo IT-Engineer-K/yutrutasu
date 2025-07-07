@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
@@ -72,37 +73,40 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'animated_progress_demo',
-                child: Row(
-                  children: [
-                    Icon(Icons.animation, size: 20),
-                    SizedBox(width: 8),
-                    Text('アニメーション進捗デモ'),
-                  ],
+              // デバッグビルド時のみ表示
+              if (kDebugMode) ...[
+                const PopupMenuItem(
+                  value: 'animated_progress_demo',
+                  child: Row(
+                    children: [
+                      Icon(Icons.animation, size: 20),
+                      SizedBox(width: 8),
+                      Text('アニメーション進捗デモ'),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem(
-                value: 'download_progress_demo',
-                child: Row(
-                  children: [
-                    Icon(Icons.download, size: 20),
-                    SizedBox(width: 8),
-                    Text('ダウンロード進捗デモ'),
-                  ],
+                const PopupMenuItem(
+                  value: 'download_progress_demo',
+                  child: Row(
+                    children: [
+                      Icon(Icons.download, size: 20),
+                      SizedBox(width: 8),
+                      Text('ダウンロード進捗デモ'),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuItem(
-                value: 'project_progress_demo',
-                child: Row(
-                  children: [
-                    Icon(Icons.business, size: 20),
-                    SizedBox(width: 8),
-                    Text('プロジェクト進捗デモ'),
-                  ],
+                const PopupMenuItem(
+                  value: 'project_progress_demo',
+                  child: Row(
+                    children: [
+                      Icon(Icons.business, size: 20),
+                      SizedBox(width: 8),
+                      Text('プロジェクト進捗デモ'),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuDivider(),
+                const PopupMenuDivider(),
+              ],
               const PopupMenuItem(
                 value: 'settings',
                 child: Row(

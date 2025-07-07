@@ -5,6 +5,7 @@ import '../models/task.dart';
 import '../controllers/yaru_koto_controller.dart';
 import '../widgets/animated_percentage_text.dart';
 import '../widgets/animated_progress_info.dart';
+import '../widgets/smooth_animated_linear_progress_indicator.dart';
 import 'edit_task_dialog.dart';
 import 'add_task_dialog.dart';
 
@@ -165,10 +166,10 @@ class _ProgressCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          LinearProgressIndicator(
+          SmoothAnimatedLinearProgressIndicator(
             value: yaruKoto.progressPercentage / 100,
             backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+            valueColor: theme.colorScheme.primary,
             minHeight: 8,
             borderRadius: BorderRadius.circular(4),
           ),
@@ -394,10 +395,10 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  LinearProgressIndicator(
+                  SmoothAnimatedLinearProgressIndicator(
                     value: widget.item.progressPercentage / 100,
                     backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-                    valueColor: AlwaysStoppedAnimation<Color>(_getProgressBorderColor(theme)),
+                    valueColor: _getProgressBorderColor(theme),
                     minHeight: 6,
                     borderRadius: BorderRadius.circular(3),
                   ),

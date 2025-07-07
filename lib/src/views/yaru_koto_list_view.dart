@@ -3,6 +3,7 @@ import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
 import '../settings/settings_view.dart';
 import '../widgets/animated_progress_info.dart';
+import '../widgets/smooth_animated_linear_progress_indicator.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
@@ -461,10 +462,10 @@ class _YaruKotoCard extends StatelessWidget {
                             decimalPlaces: 0,
                           ),
                           const SizedBox(height: 4),
-                          LinearProgressIndicator(
+                          SmoothAnimatedLinearProgressIndicator(
                             value: progressPercentage / 100,
                             backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-                            valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                            valueColor: theme.colorScheme.primary,
                             minHeight: 6,
                             borderRadius: BorderRadius.circular(3),
                           ),

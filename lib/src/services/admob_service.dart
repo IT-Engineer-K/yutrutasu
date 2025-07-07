@@ -12,9 +12,9 @@ class AdMobService {
   static Future<void> initialize() async {
     try {
       await MobileAds.instance.initialize();
-      debugPrint('AdMob initialized successfully');
+      if (kDebugMode) debugPrint('AdMob initialized successfully');
     } catch (e) {
-      debugPrint('AdMob initialization failed: $e');
+      if (kDebugMode) debugPrint('AdMob initialization failed: $e');
     }
   }
 
@@ -43,7 +43,7 @@ class AdMobService {
           interstitialAd = ad;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          debugPrint('InterstitialAd failed to load: $error');
+          if (kDebugMode) debugPrint('InterstitialAd failed to load: $error');
         },
       ),
     );
@@ -63,7 +63,7 @@ class AdMobService {
           rewardedAd = ad;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          debugPrint('RewardedAd failed to load: $error');
+          if (kDebugMode) debugPrint('RewardedAd failed to load: $error');
         },
       ),
     );

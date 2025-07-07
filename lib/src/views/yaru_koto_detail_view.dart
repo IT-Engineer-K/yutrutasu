@@ -3,6 +3,8 @@ import '../models/yaru_koto.dart';
 import '../models/task_item.dart';
 import '../models/task.dart';
 import '../controllers/yaru_koto_controller.dart';
+import '../widgets/animated_percentage_text.dart';
+import '../widgets/animated_progress_info.dart';
 import 'edit_task_dialog.dart';
 import 'edit_item_dialog.dart';
 import 'add_task_dialog.dart';
@@ -188,26 +190,19 @@ class _ProjectHeader extends StatelessWidget {
             const SizedBox(height: 16),
           ],
           // 進捗情報
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                yaruKoto.progressLabel,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              Text(
-                '${yaruKoto.progressPercentage.toStringAsFixed(1)}%',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ],
+          AnimatedProgressInfo(
+            percentage: yaruKoto.progressPercentage,
+            label: yaruKoto.progressLabel,
+            labelStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.primary,
+            ),
+            percentageStyle: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 8),
           LinearProgressIndicator(
@@ -455,8 +450,8 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${widget.item.progressPercentage.toStringAsFixed(1)}%',
+                      AnimatedPercentageText(
+                        percentage: widget.item.progressPercentage,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

@@ -28,7 +28,11 @@ void main() {
       await settingsController.loadSettings();
 
       await tester.pumpWidget(MyApp(settingsController: settingsController));
-      await tester.pump(); // pumpAndSettleを使わずにpumpを使用
+      
+      // 複数回pumpして非同期処理を完了させる
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
 
       // 空の状態のメッセージが表示されることを確認
       expect(find.text('まだプロジェクトがありません'), findsOneWidget);

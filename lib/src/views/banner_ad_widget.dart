@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/admob_service.dart';
@@ -58,7 +59,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
         adSize: widget.adSize,
         listener: BannerAdListener(
           onAdLoaded: (ad) {
-            debugPrint('Banner ad loaded successfully');
+            if (kDebugMode) debugPrint('Banner ad loaded successfully');
             _loadingTimer?.cancel();
             if (mounted) {
               setState(() {
@@ -69,7 +70,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
             }
           },
           onAdFailedToLoad: (ad, error) {
-            debugPrint('Banner ad failed to load: $error');
+            if (kDebugMode) debugPrint('Banner ad failed to load: $error');
             _loadingTimer?.cancel();
             ad.dispose();
             if (mounted) {
@@ -81,23 +82,23 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
             }
           },
           onAdOpened: (ad) {
-            debugPrint('Banner ad opened');
+            if (kDebugMode) debugPrint('Banner ad opened');
           },
           onAdClosed: (ad) {
-            debugPrint('Banner ad closed');
+            if (kDebugMode) debugPrint('Banner ad closed');
           },
           onAdImpression: (ad) {
-            debugPrint('Banner ad impression');
+            if (kDebugMode) debugPrint('Banner ad impression');
           },
           onAdClicked: (ad) {
-            debugPrint('Banner ad clicked');
+            if (kDebugMode) debugPrint('Banner ad clicked');
           },
         ),
       );
 
       _bannerAd?.load();
     } catch (e) {
-      debugPrint('Error creating banner ad: $e');
+      if (kDebugMode) debugPrint('Error creating banner ad: $e');
       if (mounted) {
         setState(() {
           _isAdFailed = true;

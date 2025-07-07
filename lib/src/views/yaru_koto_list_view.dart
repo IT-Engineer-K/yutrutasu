@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';
+import '../settings/settings_view.dart';
+import '../widgets/animated_progress_info.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
@@ -49,6 +51,70 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
         backgroundColor: theme.appBarTheme.backgroundColor,
         foregroundColor: theme.appBarTheme.foregroundColor,
         elevation: 0,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              switch (value) {
+                case 'animated_progress_demo':
+                  Navigator.pushNamed(context, '/animated_progress_demo');
+                  break;
+                case 'download_progress_demo':
+                  Navigator.pushNamed(context, '/download_progress_demo');
+                  break;
+                case 'project_progress_demo':
+                  Navigator.pushNamed(context, '/project_progress_demo');
+                  break;
+                case 'settings':
+                  Navigator.pushNamed(context, SettingsView.routeName);
+                  break;
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'animated_progress_demo',
+                child: Row(
+                  children: [
+                    Icon(Icons.animation, size: 20),
+                    SizedBox(width: 8),
+                    Text('アニメーション進捗デモ'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'download_progress_demo',
+                child: Row(
+                  children: [
+                    Icon(Icons.download, size: 20),
+                    SizedBox(width: 8),
+                    Text('ダウンロード進捗デモ'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'project_progress_demo',
+                child: Row(
+                  children: [
+                    Icon(Icons.business, size: 20),
+                    SizedBox(width: 8),
+                    Text('プロジェクト進捗デモ'),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings, size: 20),
+                    SizedBox(width: 8),
+                    Text('設定'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: widget.controller,
@@ -381,24 +447,18 @@ class _YaruKotoCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                yaruKoto.progressLabel,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                              Text(
-                                '${progressPercentage.toStringAsFixed(0)}%',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  color: theme.colorScheme.primary,
-                                ),
-                              ),
-                            ],
+                          AnimatedProgressInfo(
+                            percentage: progressPercentage,
+                            label: yaruKoto.progressLabel,
+                            labelStyle: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: theme.colorScheme.primary,
+                            ),
+                            percentageStyle: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: theme.colorScheme.primary,
+                            ),
+                            decimalPlaces: 0,
                           ),
                           const SizedBox(height: 4),
                           LinearProgressIndicator(

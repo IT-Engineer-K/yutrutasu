@@ -3,6 +3,8 @@ import '../models/yaru_koto.dart';
 import '../models/task_item.dart';
 import '../models/task.dart';
 import '../controllers/yaru_koto_controller.dart';
+import '../widgets/animated_percentage_text.dart';
+import '../widgets/animated_progress_info.dart';
 import 'edit_task_dialog.dart';
 import 'add_task_dialog.dart';
 
@@ -139,28 +141,28 @@ class _ProgressCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Text(
-                yaruKoto.progressLabel,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  yaruKoto.title,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ],
+          AnimatedProgressInfo(
+            percentage: yaruKoto.progressPercentage,
+            label: yaruKoto.progressLabel,
+            labelStyle: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+            percentageStyle: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            yaruKoto.title,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
           ),
           const SizedBox(height: 12),
           LinearProgressIndicator(
@@ -403,8 +405,8 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        '${widget.item.progressPercentage.toStringAsFixed(1)}%',
+                      AnimatedPercentageText(
+                        percentage: widget.item.progressPercentage,
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,

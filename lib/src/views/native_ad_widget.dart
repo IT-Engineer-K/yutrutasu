@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../services/admob_service.dart';
@@ -96,7 +97,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
   NativeAdListener _createAdListener() {
     return NativeAdListener(
       onAdLoaded: (ad) {
-        debugPrint('Native ad loaded successfully');
+        if (kDebugMode) debugPrint('Native ad loaded successfully');
         _timeoutTimer?.cancel();
         
         if (mounted) {
@@ -108,7 +109,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
         }
       },
       onAdFailedToLoad: (ad, error) {
-        debugPrint('Native ad failed to load: $error');
+        if (kDebugMode) debugPrint('Native ad failed to load: $error');
         _timeoutTimer?.cancel();
         ad.dispose();
         
@@ -117,16 +118,16 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
         }
       },
       onAdOpened: (ad) {
-        debugPrint('Native ad opened');
+        if (kDebugMode) debugPrint('Native ad opened');
       },
       onAdClosed: (ad) {
-        debugPrint('Native ad closed');
+        if (kDebugMode) debugPrint('Native ad closed');
       },
       onAdImpression: (ad) {
-        debugPrint('Native ad impression');
+        if (kDebugMode) debugPrint('Native ad impression');
       },
       onAdClicked: (ad) {
-        debugPrint('Native ad clicked');
+        if (kDebugMode) debugPrint('Native ad clicked');
       },
     );
   }
@@ -171,7 +172,7 @@ class _NativeAdWidgetState extends State<NativeAdWidget> {
 
   /// エラー処理
   void _handleError(NativeAdError error) {
-    debugPrint('Native ad error: ${error.debugMessage}');
+    if (kDebugMode) debugPrint('Native ad error: ${error.debugMessage}');
     
     if (mounted) {
       setState(() {

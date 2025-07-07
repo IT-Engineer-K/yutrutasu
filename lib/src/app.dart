@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'controllers/yaru_koto_controller.dart';
 import 'views/yaru_koto_list_view.dart';
+import 'views/animated_progress_demo.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
@@ -266,6 +267,8 @@ class MyApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
+                  case AnimatedProgressDemo.routeName:
+                    return const AnimatedProgressDemo();
                   case YaruKotoListView.routeName:
                   default:
                     return YaruKotoListView(controller: yaruKotoController);

@@ -20,7 +20,7 @@ class YaruKotoService {
             try {
               return YaruKoto.fromJson(json as Map<String, dynamic>);
             } catch (e) {
-              debugPrint('Error parsing YaruKoto: $e');
+              if (kDebugMode) debugPrint('Error parsing YaruKoto: $e');
               return null;
             }
           })
@@ -28,7 +28,7 @@ class YaruKotoService {
           .cast<YaruKoto>()
           .toList();
     } catch (e) {
-      debugPrint('Error loading YaruKoto list: $e');
+      if (kDebugMode) debugPrint('Error loading YaruKoto list: $e');
       return [];
     }
   }
@@ -40,7 +40,7 @@ class YaruKotoService {
       final jsonString = json.encode(yaruKotoList.map((e) => e.toJson()).toList());
       await prefs.setString(_key, jsonString);
     } catch (e) {
-      debugPrint('Error saving YaruKoto list: $e');
+      if (kDebugMode) debugPrint('Error saving YaruKoto list: $e');
       rethrow;
     }
   }
@@ -52,7 +52,7 @@ class YaruKotoService {
       list.add(yaruKoto);
       await saveYaruKoto(list);
     } catch (e) {
-      debugPrint('Error adding YaruKoto: $e');
+      if (kDebugMode) debugPrint('Error adding YaruKoto: $e');
       rethrow;
     }
   }
@@ -69,7 +69,7 @@ class YaruKotoService {
         throw Exception('YaruKoto with id ${updatedYaruKoto.id} not found');
       }
     } catch (e) {
-      debugPrint('Error updating YaruKoto: $e');
+      if (kDebugMode) debugPrint('Error updating YaruKoto: $e');
       rethrow;
     }
   }
@@ -85,7 +85,7 @@ class YaruKotoService {
       }
       await saveYaruKoto(list);
     } catch (e) {
-      debugPrint('Error deleting YaruKoto: $e');
+      if (kDebugMode) debugPrint('Error deleting YaruKoto: $e');
       rethrow;
     }
   }

@@ -15,7 +15,7 @@ class YaruKotoController extends ChangeNotifier {
   List<YaruKoto> get yaruKotoList => _yaruKotoList;
   bool get isLoading => _isLoading;
 
-  /// データを読み込む
+  /// チE�Eタを読み込む
   Future<void> loadYaruKoto() async {
     if (_isLoading) return;
     
@@ -25,7 +25,7 @@ class YaruKotoController extends ChangeNotifier {
     try {
       _yaruKotoList = await _service.getAllYaruKoto();
     } catch (e) {
-      debugPrint('Error loading yaru koto: $e');
+      if (kDebugMode) debugPrint('Error loading yaru koto: $e');
       _yaruKotoList = [];
     } finally {
       _isLoading = false;
@@ -47,11 +47,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList.add(yaruKoto);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error adding yaru koto: $e');
+      if (kDebugMode) debugPrint('Error adding yaru koto: $e');
     }
   }
 
-  /// プロジェクトに項目を追加
+  /// プロジェクトに頁E��を追加
   Future<void> addTaskItem(String yaruKotoId, String itemTitle, {String? description}) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -73,11 +73,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error adding task item: $e');
+      if (kDebugMode) debugPrint('Error adding task item: $e');
     }
   }
 
-  /// 項目にタスクを追加
+  /// 頁E��にタスクを追加
   Future<void> addTask(String yaruKotoId, String taskItemId, String taskTitle) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -105,7 +105,7 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error adding task: $e');
+      if (kDebugMode) debugPrint('Error adding task: $e');
     }
   }
 
@@ -135,11 +135,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error updating task progress: $e');
+      if (kDebugMode) debugPrint('Error updating task progress: $e');
     }
   }
 
-  /// タスクの進捗を次のステップに進める
+  /// タスクの進捗を次のスチE��プに進める
   Future<void> nextTaskProgress(String yaruKotoId, String taskItemId, String taskId) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -165,7 +165,7 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList.removeWhere((e) => e.id == id);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error deleting yaru koto: $e');
+      if (kDebugMode) debugPrint('Error deleting yaru koto: $e');
     }
   }
 
@@ -184,11 +184,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error updating yaru koto: $e');
+      if (kDebugMode) debugPrint('Error updating yaru koto: $e');
     }
   }
 
-  /// 項目を削除
+  /// 頁E��を削除
   Future<void> deleteTaskItem(String yaruKotoId, String taskItemId) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -203,11 +203,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error deleting task item: $e');
+      if (kDebugMode) debugPrint('Error deleting task item: $e');
     }
   }
 
-  /// 項目の名前・説明を更新
+  /// 頁E��の名前・説明を更新
   Future<void> updateTaskItem(String yaruKotoId, String taskItemId, {String? title, String? description}) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -229,7 +229,7 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error updating task item: $e');
+      if (kDebugMode) debugPrint('Error updating task item: $e');
     }
   }
 
@@ -255,7 +255,7 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error deleting task: $e');
+      if (kDebugMode) debugPrint('Error deleting task: $e');
     }
   }
 
@@ -285,11 +285,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error updating task: $e');
+      if (kDebugMode) debugPrint('Error updating task: $e');
     }
   }
 
-  /// 項目の順序を変更
+  /// 頁E��の頁E��を変更
   Future<void> reorderTaskItems(String yaruKotoId, int oldIndex, int newIndex) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -310,11 +310,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error reordering task items: $e');
+      if (kDebugMode) debugPrint('Error reordering task items: $e');
     }
   }
 
-  /// タスクの順序を変更
+  /// タスクの頁E��を変更
   Future<void> reorderTasks(String yaruKotoId, String taskItemId, int oldIndex, int newIndex) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -342,11 +342,11 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      debugPrint('Error reordering tasks: $e');
+      if (kDebugMode) debugPrint('Error reordering tasks: $e');
     }
   }
 
-  /// プロジェクト一覧の順序を変更
+  /// プロジェクト一覧の頁E��を変更
   Future<void> reorderYaruKoto(int oldIndex, int newIndex) async {
     if (oldIndex < newIndex) {
       newIndex -= 1;
@@ -360,7 +360,7 @@ class YaruKotoController extends ChangeNotifier {
       }
       notifyListeners();
     } catch (e) {
-      debugPrint('Error reordering yaru koto: $e');
+      if (kDebugMode) debugPrint('Error reordering yaru koto: $e');
     }
   }
 }

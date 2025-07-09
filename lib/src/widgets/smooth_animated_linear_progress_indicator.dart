@@ -5,7 +5,7 @@ class SmoothAnimatedLinearProgressIndicator extends StatefulWidget {
   const SmoothAnimatedLinearProgressIndicator({
     super.key,
     required this.value,
-    this.duration = const Duration(milliseconds: 500),
+    this.duration = const Duration(milliseconds: 300),
     this.backgroundColor,
     this.valueColor,
     this.minHeight = 4.0,

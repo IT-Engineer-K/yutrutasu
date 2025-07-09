@@ -20,6 +20,7 @@
 - [x] 共通テーマヘルパー（ThemeHelper）の作成
 - [x] ダイアログでの重複コード削除
 - [x] テストファイルの実際のアプリに対応した更新
+- [x] **重複コードの大幅削減**（2024年リファクタリング）
 
 ### 4. ネイティブ広告ウィジェットの最適化
 - [x] 型安全性の強化（enum化、null安全性）
@@ -37,7 +38,16 @@
 - [x] 不要なアニメーションウィジェット削除（animated_linear_progress_indicator.dart）
 - [x] アニメーション機能のテスト追加
 
-## 🔍 将来的な改善点（中優先度）
+### 6. � 重複コード削減・冗長性解消（新規追加 - 2025/7/9）
+- [x] **共通ダイアログヘルパー作成**（DialogHelpers）
+- [x] **進捗関連ユーティリティ統合**（ProgressHelpers）
+- [x] **削除確認ダイアログの統一化**
+- [x] **ポップアップメニューアイテムの共通化** 
+- [x] **進捗色計算ロジックの統一化**
+- [x] **デバッグ専用ファイルの削除**（animated_progress_demo.dart）
+- [x] **重複メソッドの大幅削除**
+
+## �🔍 将来的な改善点（中優先度）
 
 ## 📝 実施した修正の詳細
 
@@ -45,9 +55,48 @@
 - ❌ `lib/src/sample_feature/` フォルダ全体（不要なサンプルコード）
 - ❌ `lib/src/views/native_ad_sample_screen.dart`（使用されていない）
 - ❌ `lib/src/widgets/animated_linear_progress_indicator.dart`（使用されていない初期版アニメーションバー）
+- ❌ `lib/src/views/animated_progress_demo.dart`（デバッグ専用、本番不要）
 
 ### 新規作成したファイル
 - ✅ `lib/src/common/theme_helper.dart`（共通テーマユーティリティ）
+- ✅ `lib/src/views/widgets/ad_widget_constants.dart`（広告ウィジェット用定数・enum）
+- ✅ `lib/src/widgets/animated_percentage_text.dart`（進捗率アニメーション表示）
+- ✅ `lib/src/widgets/smooth_animated_linear_progress_indicator.dart`（滑らかプログレスバー）
+- ✅ `lib/src/widgets/animated_progress_info.dart`（統合進捗表示）
+- ✅ `test/animated_percentage_text_test.dart`（アニメーション機能テスト）
+- ✅ `lib/src/common/dialog_helpers.dart`（共通ダイアログヘルパー）
+- ✅ `lib/src/common/progress_helpers.dart`（進捗関連ユーティリティ）
+
+## 🎯 重複コード削減の詳細結果
+
+### 1. ダイアログ関連の統一化
+- **削除確認ダイアログ**: 3つのファイルで重複していたコードを `DialogHelpers.showDeleteConfirmDialog()` に統一
+- **ポップアップメニューアイテム**: 編集・削除のメニューアイテムを `DialogHelpers.getEditDeleteMenuItems()` に統一
+
+### 2. 進捗色計算の統一化
+- **タスク進捗色**: `ProgressHelpers.getProgressBackgroundColor()` に統一
+- **ボーダー色**: `ProgressHelpers.getProgressBorderColor()` に統一  
+- **テキスト色**: `ProgressHelpers.getProgressTextColor()` に統一
+- **進捗絵文字**: `ProgressHelpers.getProgressEmoji()` に統一
+
+### 3. 削除した重複メソッド
+- `_getProgressColor()` - 複数ファイルで重複
+- `_getProgressBorderColor()` - 複数ファイルで重複  
+- `_getProgressTextColor()` - 複数ファイルで重複
+- `_getProgressEmoji()` - 複数ファイルで重複
+- 削除確認ダイアログの個別実装 - 3箇所で重複
+
+### 4. コード行数削減効果
+- **削除行数**: 約150行の重複コードを削除
+- **新規共通コード**: 約80行の再利用可能なヘルパー追加
+- **実質削減**: 約70行のコード削減
+
+## ✨ 改善効果
+
+1. **保守性向上**: 共通機能の変更時に修正箇所が1箇所に集約
+2. **一貫性向上**: UI要素のスタイルと動作が統一化
+3. **可読性向上**: 重複コードの削除により、コード理解が容易
+4. **拡張性向上**: 新しい画面でも共通ヘルパーを簡単に再利用可能
 - ✅ `lib/src/views/widgets/ad_widget_constants.dart`（広告ウィジェット用定数・enum）
 - ✅ `lib/src/widgets/animated_percentage_text.dart`（進捗率アニメーション表示）
 - ✅ `lib/src/widgets/smooth_animated_linear_progress_indicator.dart`（滑らかプログレスバー）

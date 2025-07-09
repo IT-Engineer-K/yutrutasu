@@ -7,7 +7,7 @@ class AnimatedProgressInfo extends StatelessWidget {
     super.key,
     required this.percentage,
     required this.label,
-    this.duration = const Duration(milliseconds: 500),
+    this.duration = const Duration(milliseconds: 300),
     this.labelStyle,
     this.percentageStyle,
     this.decimalPlaces = 1,

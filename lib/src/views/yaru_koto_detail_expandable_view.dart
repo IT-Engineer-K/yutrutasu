@@ -6,6 +6,8 @@ import '../controllers/yaru_koto_controller.dart';
 import '../widgets/animated_percentage_text.dart';
 import '../widgets/animated_progress_info.dart';
 import '../widgets/smooth_animated_linear_progress_indicator.dart';
+import '../common/dialog_helpers.dart';
+import '../common/progress_helpers.dart';
 import 'edit_task_dialog.dart';
 import 'add_task_dialog.dart';
 
@@ -128,7 +130,7 @@ class _ProgressCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: Colors.white, // カードの色を白に統一
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -210,7 +212,7 @@ class _EmptyItemsWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: Colors.white, // カードの色を白に統一
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -309,7 +311,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
     final theme = Theme.of(context);
     return Card(
       elevation: 2,
-      color: theme.cardColor,
+      color: Colors.white, // カードの色を白に統一
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
@@ -341,9 +343,9 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                         height: 40,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _getProgressColor(theme),
+                          color: _getPercentageBasedProgressColor(widget.item.progressPercentage, theme),
                           border: Border.all(
-                            color: _getProgressBorderColor(theme),
+                            color: ProgressHelpers.getPercentageBasedBorderColor(widget.item.progressPercentage, theme),
                             width: 2,
                           ),
                         ),
@@ -352,7 +354,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                             widget.item.progressLabel.split('')[0],
                             style: TextStyle(
                               fontSize: 16,
-                              color: _getProgressBorderColor(theme),
+                              color: ProgressHelpers.getPercentageBasedBorderColor(widget.item.progressPercentage, theme),
                             ),
                           ),
                         ),
@@ -398,7 +400,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                   SmoothAnimatedLinearProgressIndicator(
                     value: widget.item.progressPercentage / 100,
                     backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-                    valueColor: _getProgressBorderColor(theme),
+                    valueColor: ProgressHelpers.getPercentageBasedBorderColor(widget.item.progressPercentage, theme),
                     minHeight: 6,
                     borderRadius: BorderRadius.circular(3),
                   ),
@@ -411,7 +413,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: _getProgressBorderColor(theme),
+                          color: ProgressHelpers.getPercentageBasedBorderColor(widget.item.progressPercentage, theme),
                         ),
                       ),
                       Text(
@@ -542,41 +544,19 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
   }
 
   void _confirmDeleteTask(BuildContext context, Task task) {
-    showDialog(
+    DialogHelpers.showDeleteConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('タスクを削除'),
-        content: Text('「${task.title}」を削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('キャンセル'),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.controller.deleteTask(widget.yaruKoto.id, widget.item.id, task.id);
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('削除'),
-          ),
-        ],
-      ),
+      title: task.title,
+      onConfirm: () {
+        widget.controller.deleteTask(widget.yaruKoto.id, widget.item.id, task.id);
+      },
     );
   }
 
-  Color _getProgressColor(ThemeData theme) {
-    final percentage = widget.item.progressPercentage;
+  Color _getPercentageBasedProgressColor(double percentage, ThemeData theme) {
     if (percentage == 0) return theme.colorScheme.surface;
     if (percentage < 100) return theme.colorScheme.primary.withOpacity(0.2);
     return theme.colorScheme.primary.withOpacity(0.3);
-  }
-
-  Color _getProgressBorderColor(ThemeData theme) {
-    final percentage = widget.item.progressPercentage;
-    if (percentage == 0) return theme.colorScheme.onSurface.withOpacity(0.4);
-    if (percentage < 100) return theme.colorScheme.primary;
-    return theme.colorScheme.primary;
   }
 }
 
@@ -602,13 +582,18 @@ class _CompactTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
+    // 進捗更新中かどうかを判定
+    final uniqueId = '${yaruKoto.id}-${taskItem.id}-${task.id}';
+    final isUpdating = controller.updatingTaskIds.contains(uniqueId);
+    
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: Colors.white, // カードの色を白に統一
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: _getProgressBorderColor(task.progress, theme).withOpacity(0.3),
+          color: ProgressHelpers.getProgressBorderColor(task.progress, theme).withOpacity(0.3),
           width: 1,
         ),
       ),
@@ -617,7 +602,7 @@ class _CompactTaskCard extends StatelessWidget {
           // 進捗部分（タップ可能）
           Expanded(
             child: GestureDetector(
-              onTap: onProgressTap,
+              onTap: isUpdating ? null : onProgressTap, // 更新中はタップを無効化
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Row(
@@ -626,31 +611,45 @@ class _CompactTaskCard extends StatelessWidget {
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: _getProgressColor(task.progress, theme),
+                        color: ProgressHelpers.getProgressBackgroundColor(task.progress, theme),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: _getProgressBorderColor(task.progress, theme),
+                          color: ProgressHelpers.getProgressBorderColor(task.progress, theme),
                           width: 1,
                         ),
                       ),
-                      child: Center(
-                        child: Text(
-                          _getProgressEmoji(task.progress),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getProgressTextColor(task.progress, theme),
-                          ),
-                        ),
-                      ),
+                      child: isUpdating
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  ProgressHelpers.getProgressBorderColor(task.progress, theme),
+                                ),
+                              ),
+                            )
+                          : Center(
+                              child: Text(
+                                ProgressHelpers.getProgressEmoji(task.progress),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: ProgressHelpers.getProgressTextColor(task.progress, theme),
+                                ),
+                              ),
+                            ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
-                        task.title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: theme.colorScheme.primary,
+                      child: Opacity(
+                        opacity: isUpdating ? 0.6 : 1.0,
+                        child: Text(
+                          task.title,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: theme.colorScheme.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -658,11 +657,11 @@ class _CompactTaskCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: task.progress == TaskProgress.completed 
-                          ? _getProgressBorderColor(task.progress, theme)
-                          : _getProgressBorderColor(task.progress, theme).withOpacity(0.1),
+                          ? ProgressHelpers.getProgressBorderColor(task.progress, theme)
+                          : ProgressHelpers.getProgressBorderColor(task.progress, theme).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: _getProgressBorderColor(task.progress, theme),
+                          color: ProgressHelpers.getProgressBorderColor(task.progress, theme),
                           width: 0.5,
                         ),
                       ),
@@ -670,7 +669,7 @@ class _CompactTaskCard extends StatelessWidget {
                         task.progress.label,
                         style: TextStyle(
                           fontSize: 10,
-                          color: _getProgressTextColor(task.progress, theme),
+                          color: ProgressHelpers.getProgressTextColor(task.progress, theme),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -684,7 +683,7 @@ class _CompactTaskCard extends StatelessWidget {
           PopupMenuButton<String>(
             icon: Icon(
               Icons.more_vert,
-              color: _getProgressBorderColor(task.progress, theme),
+              color: ProgressHelpers.getProgressBorderColor(task.progress, theme),
               size: 16,
             ),
             onSelected: (value) {
@@ -697,76 +696,11 @@ class _CompactTaskCard extends StatelessWidget {
                   break;
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'edit',
-                child: Row(
-                  children: [
-                    Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
-                    const SizedBox(width: 8),
-                    const Text('編集', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-              ),
-              PopupMenuItem(
-                value: 'delete',
-                child: Row(
-                  children: [
-                    Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
-                    const SizedBox(width: 8),
-                    const Text('削除', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-              ),
-            ],
+            itemBuilder: (context) => DialogHelpers.getEditDeleteMenuItems(),
           ),
         ],
       ),
     );
-  }
-
-  Color _getProgressColor(TaskProgress progress, ThemeData theme) {
-    switch (progress) {
-      case TaskProgress.notStarted:
-        return theme.colorScheme.surface;
-      case TaskProgress.inProgress:
-        return theme.colorScheme.primary.withOpacity(0.2);
-      case TaskProgress.completed:
-        return theme.colorScheme.primary; // 完了時は緑色背景
-    }
-  }
-
-  Color _getProgressBorderColor(TaskProgress progress, ThemeData theme) {
-    switch (progress) {
-      case TaskProgress.notStarted:
-        return theme.colorScheme.onSurface.withOpacity(0.4);
-      case TaskProgress.inProgress:
-        return theme.colorScheme.primary;
-      case TaskProgress.completed:
-        return theme.colorScheme.primary;
-    }
-  }
-
-  Color _getProgressTextColor(TaskProgress progress, ThemeData theme) {
-    switch (progress) {
-      case TaskProgress.notStarted:
-        return theme.colorScheme.onSurface.withOpacity(0.4);
-      case TaskProgress.inProgress:
-        return theme.colorScheme.primary;
-      case TaskProgress.completed:
-        return Colors.white; // 完了時は白色
-    }
-  }
-
-  String _getProgressEmoji(TaskProgress progress) {
-    switch (progress) {
-      case TaskProgress.notStarted:
-        return '🌰';
-      case TaskProgress.inProgress:
-        return '🌱';
-      case TaskProgress.completed:
-        return '🌳';
-    }
   }
 }
 

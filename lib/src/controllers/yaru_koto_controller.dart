@@ -15,7 +15,13 @@ class YaruKotoController extends ChangeNotifier {
   List<YaruKoto> get yaruKotoList => _yaruKotoList;
   bool get isLoading => _isLoading;
 
-  /// チE�Eタを読み込む
+  /// 進捗更新処理中かどうかのフラグ
+  final Set<String> _updatingTaskIds = <String>{};
+  
+  /// 現在更新中のタスクIDのセットを取得
+  Set<String> get updatingTaskIds => Set.unmodifiable(_updatingTaskIds);
+
+  /// データを読み込む
   Future<void> loadYaruKoto() async {
     if (_isLoading) return;
     
@@ -51,7 +57,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// プロジェクトに頁E��を追加
+  /// プロジェクトに項目を追加
   Future<void> addTaskItem(String yaruKotoId, String itemTitle, {String? description}) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -77,7 +83,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 頁E��にタスクを追加
+  /// 項目にタスクを追加
   Future<void> addTask(String yaruKotoId, String taskItemId, String taskTitle) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -139,8 +145,14 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// タスクの進捗を次のスチE��プに進める
+  /// タスクの進捗を次のステップに進める
   Future<void> nextTaskProgress(String yaruKotoId, String taskItemId, String taskId) async {
+    // 既に更新処理中の場合は無視
+    final uniqueId = '$yaruKotoId-$taskItemId-$taskId';
+    if (_updatingTaskIds.contains(uniqueId)) {
+      return;
+    }
+
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
 
@@ -152,10 +164,18 @@ class YaruKotoController extends ChangeNotifier {
     final taskIndex = taskItem.tasks.indexWhere((e) => e.id == taskId);
     if (taskIndex == -1) return;
 
-    final currentProgress = taskItem.tasks[taskIndex].progress;
-    final nextProgress = currentProgress.next;
+    // 更新処理開始
+    _updatingTaskIds.add(uniqueId);
 
-    await updateTaskProgress(yaruKotoId, taskItemId, taskId, nextProgress);
+    try {
+      final currentProgress = taskItem.tasks[taskIndex].progress;
+      final nextProgress = currentProgress.next;
+
+      await updateTaskProgress(yaruKotoId, taskItemId, taskId, nextProgress);
+    } finally {
+      // 更新処理終了
+      _updatingTaskIds.remove(uniqueId);
+    }
   }
 
   /// プロジェクトを削除
@@ -188,7 +208,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 頁E��を削除
+  /// 項目を削除
   Future<void> deleteTaskItem(String yaruKotoId, String taskItemId) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -207,7 +227,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 頁E��の名前・説明を更新
+  /// 項目の名前・説明を更新
   Future<void> updateTaskItem(String yaruKotoId, String taskItemId, {String? title, String? description}) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -289,7 +309,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 頁E��の頁E��を変更
+  /// 項目の順序を変更
   Future<void> reorderTaskItems(String yaruKotoId, int oldIndex, int newIndex) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -314,7 +334,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// タスクの頁E��を変更
+  /// タスクの順序を変更
   Future<void> reorderTasks(String yaruKotoId, String taskItemId, int oldIndex, int newIndex) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
@@ -346,7 +366,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// プロジェクト一覧の頁E��を変更
+  /// プロジェクト一覧の順序を変更
   Future<void> reorderYaruKoto(int oldIndex, int newIndex) async {
     if (oldIndex < newIndex) {
       newIndex -= 1;

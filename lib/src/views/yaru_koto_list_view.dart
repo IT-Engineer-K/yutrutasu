@@ -5,6 +5,7 @@ import '../controllers/yaru_koto_controller.dart';
 import '../settings/settings_view.dart';
 import '../widgets/animated_progress_info.dart';
 import '../widgets/smooth_animated_linear_progress_indicator.dart';
+import '../common/dialog_helpers.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
@@ -58,55 +59,12 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               switch (value) {
-                case 'animated_progress_demo':
-                  Navigator.pushNamed(context, '/animated_progress_demo');
-                  break;
-                case 'download_progress_demo':
-                  Navigator.pushNamed(context, '/download_progress_demo');
-                  break;
-                case 'project_progress_demo':
-                  Navigator.pushNamed(context, '/project_progress_demo');
-                  break;
                 case 'settings':
                   Navigator.pushNamed(context, SettingsView.routeName);
                   break;
               }
             },
             itemBuilder: (context) => [
-              // デバッグビルド時のみ表示
-              if (kDebugMode) ...[
-                const PopupMenuItem(
-                  value: 'animated_progress_demo',
-                  child: Row(
-                    children: [
-                      Icon(Icons.animation, size: 20),
-                      SizedBox(width: 8),
-                      Text('アニメーション進捗デモ'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'download_progress_demo',
-                  child: Row(
-                    children: [
-                      Icon(Icons.download, size: 20),
-                      SizedBox(width: 8),
-                      Text('ダウンロード進捗デモ'),
-                    ],
-                  ),
-                ),
-                const PopupMenuItem(
-                  value: 'project_progress_demo',
-                  child: Row(
-                    children: [
-                      Icon(Icons.business, size: 20),
-                      SizedBox(width: 8),
-                      Text('プロジェクト進捗デモ'),
-                    ],
-                  ),
-                ),
-                const PopupMenuDivider(),
-              ],
               const PopupMenuItem(
                 value: 'settings',
                 child: Row(
@@ -275,43 +233,12 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
   }
 
   void _confirmDelete(BuildContext context, YaruKoto yaruKoto) {
-    final theme = Theme.of(context);
-    showDialog(
+    DialogHelpers.showDeleteConfirmDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
-          children: [
-            Icon(Icons.warning, color: theme.colorScheme.error),
-            const SizedBox(width: 8),
-            Text(
-              '削除の確認',
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        content: Text('「${yaruKoto.title}」を削除しますか？'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(
-              'キャンセル',
-              style: TextStyle(color: theme.colorScheme.onSurface.withOpacity(0.7)),
-            ),
-          ),
-          TextButton(
-            onPressed: () {
-              widget.controller.deleteYaruKoto(yaruKoto.id);
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(foregroundColor: theme.colorScheme.error),
-            child: const Text('削除'),
-          ),
-        ],
-      ),
+      title: yaruKoto.title,
+      onConfirm: () {
+        widget.controller.deleteYaruKoto(yaruKoto.id);
+      },
     );
   }
 
@@ -357,7 +284,7 @@ class _YaruKotoCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      color: theme.cardColor,
+      color: Colors.white, // カードの色を白に統一
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,
@@ -398,40 +325,7 @@ class _YaruKotoCard extends StatelessWidget {
                             break;
                         }
                       },
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(Icons.edit, color: theme.colorScheme.primary, size: 16),
-                              const SizedBox(width: 8),
-                              Text(
-                                '名前を編集', 
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: theme.colorScheme.error, size: 16),
-                              const SizedBox(width: 8),
-                              Text(
-                                '削除', 
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      itemBuilder: (context) => DialogHelpers.getEditDeleteMenuItems(),
                     ),
                   ],
                 ),

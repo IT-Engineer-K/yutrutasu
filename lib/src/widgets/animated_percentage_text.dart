@@ -5,7 +5,7 @@ class AnimatedPercentageText extends StatefulWidget {
   const AnimatedPercentageText({
     super.key,
     required this.percentage,
-    this.duration = const Duration(milliseconds: 500),
+    this.duration = const Duration(milliseconds: 300),
     this.style,
     this.decimalPlaces = 1,
     this.curve = Curves.easeInOut,

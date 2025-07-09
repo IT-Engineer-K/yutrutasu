@@ -7,7 +7,7 @@ class AdWidgetConstants {
   
   // マージン・パディング
   static const double horizontalMargin = 16.0;
-  static const double verticalMargin = 8.0;
+  static const double verticalMargin = 40.0;
   static const double borderRadius = 12.0;
   static const double borderWidth = 1.0;
   

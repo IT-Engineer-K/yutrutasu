@@ -122,7 +122,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
     if (_bannerAd != null && _isAdLoaded) {
       return Container(
         height: widget.height ?? widget.adSize.height.toDouble(),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -139,7 +139,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       // エラー状態の表示
       return Container(
         height: widget.height ?? widget.adSize.height.toDouble(),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         decoration: BoxDecoration(
           color: theme.colorScheme.errorContainer.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12),
@@ -200,7 +200,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       // 読み込み中の表示
       return Container(
         height: widget.height ?? widget.adSize.height.toDouble(),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
           borderRadius: BorderRadius.circular(12),

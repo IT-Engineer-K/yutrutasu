@@ -166,7 +166,7 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                       if (index == widget.controller.yaruKotoList.length) {
                         return Container(
                           key: const ValueKey('native_ad'),
-                          margin: const EdgeInsets.only(bottom: 12),
+                          margin: const EdgeInsets.only(bottom: 40),
                           child: AspectRatio(
                             aspectRatio: 1.0, // 縦横比1:1に設定
                             child: const NativeAdWidget(

@@ -17,35 +17,101 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('設定'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        // Glue the SettingsController to the theme selection DropdownButton.
-        //
-        // When a user selects a theme from the dropdown list, the
-        // SettingsController is updated, which rebuilds the MaterialApp.
-        child: DropdownButton<ThemeMode>(
-          // Read the selected themeMode from the controller
-          value: controller.themeMode,
-          // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
-          items: const [
-            DropdownMenuItem(
-              value: ThemeMode.system,
-              child: Text('System Theme'),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'テーマ設定',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-            DropdownMenuItem(
-              value: ThemeMode.light,
-              child: Text('Light Theme'),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'アプリの外観',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<ThemeMode>(
+                      value: controller.themeMode,
+                      onChanged: controller.updateThemeMode,
+                      decoration: const InputDecoration(
+                        labelText: 'テーマ',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                          value: ThemeMode.system,
+                          child: Row(
+                            children: [
+                              Icon(Icons.settings_suggest),
+                              SizedBox(width: 8),
+                              Text('システム設定に従う'),
+                            ],
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.light,
+                          child: Row(
+                            children: [
+                              Icon(Icons.light_mode),
+                              SizedBox(width: 8),
+                              Text('ライトモード'),
+                            ],
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: ThemeMode.dark,
+                          child: Row(
+                            children: [
+                              Icon(Icons.dark_mode),
+                              SizedBox(width: 8),
+                              Text('ダークモード'),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _getThemeDescription(controller.themeMode),
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            DropdownMenuItem(
-              value: ThemeMode.dark,
-              child: Text('Dark Theme'),
-            )
           ],
         ),
       ),
     );
+  }
+
+  String _getThemeDescription(ThemeMode themeMode) {
+    switch (themeMode) {
+      case ThemeMode.system:
+        return 'デバイスの設定に基づいて自動的にライト/ダークモードを切り替えます';
+      case ThemeMode.light:
+        return '明るいテーマで表示します';
+      case ThemeMode.dark:
+        return '暗いテーマで表示します（バッテリー節約効果もあります）';
+    }
   }
 }

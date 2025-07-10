@@ -6,6 +6,7 @@ import '../settings/settings_view.dart';
 import '../widgets/animated_progress_info.dart';
 import '../widgets/smooth_animated_linear_progress_indicator.dart';
 import '../common/dialog_helpers.dart';
+import '../common/theme_helpers.dart';
 import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
@@ -284,7 +285,7 @@ class _YaruKotoCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       elevation: 2,
-      color: Colors.white, // カードの色を白に統一
+      color: ThemeHelpers.getCardColor(context), // 動的にカード色を決定
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: onTap,

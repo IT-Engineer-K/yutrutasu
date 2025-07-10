@@ -159,7 +159,7 @@ class MyApp extends StatelessWidget {
             // ダークテーマでも丸みを持たせるコンポーネントテーマを追加
             cardTheme: CardTheme(
               elevation: 2,
-              color: Colors.white, // ダークテーマでもカードの色を白に統一
+              color: const Color(0xFF424242), // ダークテーマでは濃いグレー
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),

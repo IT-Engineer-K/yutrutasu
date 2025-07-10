@@ -8,6 +8,7 @@ import '../widgets/animated_progress_info.dart';
 import '../widgets/smooth_animated_linear_progress_indicator.dart';
 import '../common/dialog_helpers.dart';
 import '../common/progress_helpers.dart';
+import '../common/theme_helpers.dart';
 import 'edit_task_dialog.dart';
 import 'edit_item_dialog.dart';
 import 'add_task_dialog.dart';
@@ -245,11 +246,11 @@ class _EmptyItemsWidget extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white, // カードの色を白に統一
+          color: ThemeHelpers.getCardColor(context), // 動的にカード色を決定
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
+              color: ThemeHelpers.getShadowColor(context), // 動的に影の色を決定
               spreadRadius: 1,
               blurRadius: 4,
               offset: const Offset(0, 2),
@@ -326,7 +327,7 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
     final theme = Theme.of(context);
     return Card(
       elevation: 2,
-      color: Colors.white, // カードの色を白に統一
+      color: ThemeHelpers.getCardColor(context), // 動的にカード色を決定
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(color: theme.colorScheme.outline.withOpacity(0.3)),
@@ -652,7 +653,7 @@ class _CompactTaskCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white, // カードの色を白に統一
+        color: ThemeHelpers.getCardColor(context), // 動的にカード色を決定
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: ProgressHelpers.getProgressBorderColor(task.progress, theme).withOpacity(0.3),

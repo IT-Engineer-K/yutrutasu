@@ -25,6 +25,19 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8
     }
 
+    // Bundle設定
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = true
+        }
+        abi {
+            enableSplit = true
+        }
+    }
+
     signingConfigs {
         release {
             if (keystorePropertiesFile.exists()) {
@@ -55,6 +68,11 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            
+            // デバッグシンボルを有効にする
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
         }
     }
 }

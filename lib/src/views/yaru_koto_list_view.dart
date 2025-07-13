@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/yaru_koto.dart';
 import '../controllers/yaru_koto_controller.dart';

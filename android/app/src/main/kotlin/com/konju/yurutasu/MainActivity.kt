@@ -1,4 +1,4 @@
-package com.example.yurutasu
+package com.konju.yurutasu
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -12,13 +12,13 @@ class MainActivity: FlutterActivity() {
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine, 
             "listTile", 
-            com.example.yurutasu.NativeAdFactoryExample(this)
+            com.konju.yurutasu.NativeAdFactoryExample(this)
         )
         
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine, 
             "medium", 
-            com.example.yurutasu.MediumNativeAdFactory(this)
+            com.konju.yurutasu.MediumNativeAdFactory(this)
         )
     }
     

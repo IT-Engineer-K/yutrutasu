@@ -1,4 +1,4 @@
-package com.example.yurutasu
+package com.konju.yurutasu
 
 import android.content.Context
 import android.util.Log

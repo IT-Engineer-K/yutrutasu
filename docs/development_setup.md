@@ -156,7 +156,7 @@ android {
     compileSdkVersion 34
     
     defaultConfig {
-        applicationId "com.example.yurutasu"
+        applicationId "com.konju.yurutasu"
         minSdkVersion 21
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()

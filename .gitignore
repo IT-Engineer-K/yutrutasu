@@ -49,6 +49,11 @@ app.*.map.json
 .env.test
 .env.production
 
+# Android signing scripts (contains sensitive information)
+set_signing_env.ps1
+set_signing_env.sh
+signing_env.bat
+
 # AdMob and Firebase configuration files (may contain sensitive keys)
 /android/app/google-services.json
 /ios/Runner/GoogleService-Info.plist

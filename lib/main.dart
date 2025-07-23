@@ -5,17 +5,46 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
+import 'src/services/admob_config.dart';
 import 'src/services/admob_service.dart';
+import 'src/services/att_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   try {
-    // 環境変数をロード
-    await dotenv.load(fileName: ".env");
+    // 環境変数をロード（ファイルが存在しない場合もエラーにしない）
+    try {
+      await dotenv.load(fileName: ".env");
+      if (kDebugMode) {
+        debugPrint('✅ .envファイルが正常に読み込まれました');
+      }
+    } catch (envError) {
+      if (kDebugMode) {
+        debugPrint('⚠️ .envファイルの読み込みに失敗しました: $envError');
+        debugPrint('テスト広告を使用して続行します。');
+      }
+    }
     
     // AdMobを初期化
-    await AdMobService.initialize();
+    try {
+      // AdMob設定のテスト
+      if (kDebugMode) {
+        debugPrint('AdMob設定テスト開始...');
+        final appId = AdMobConfig.appId;
+        debugPrint('App ID: $appId');
+      }
+      
+      await AdMobService.initialize();
+    } catch (admobError) {
+      if (kDebugMode) {
+        debugPrint('❌ AdMob初期化でエラーが発生しました: $admobError');
+      }
+      // AdMob初期化が失敗してもアプリは継続
+    }
+    
+    // iOS: App Tracking Transparencyのリクエスト
+    await AttService.requestTrackingPermission();
     
     // 開発中はテストデバイスを設定（実機でのテスト時に有効）
     if (kDebugMode) {
@@ -35,7 +64,9 @@ void main() async {
     // SettingsView.
     runApp(MyApp(settingsController: settingsController));
   } catch (e) {
-    debugPrint('Error during app initialization: $e');
+    if (kDebugMode) {
+      debugPrint('Error during app initialization: $e');
+    }
     // エラーが発生してもアプリは起動させる
     final settingsController = SettingsController(SettingsService());
     await settingsController.loadSettings();

@@ -2,6 +2,13 @@
     <!-- Internet permission for AdMob -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- Optional: for better ad targeting -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- Ad permission for better ad performance -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
         android:label="ゆるたす"
@@ -11,7 +18,18 @@
         <!-- AdMob App ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="@string/admob_app_id"/>
+        
+        <!-- AdMob設定 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
+            android:value="true"/>
+        
+        <!-- プライバシー設定 -->
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true"/>
+            android:value="true"/>
         
         <activity
             android:name=".MainActivity"

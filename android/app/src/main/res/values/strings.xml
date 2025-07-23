@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- AdMob App ID - 本番環境用 -->
+    <!-- 注意: 実際のAdMob管理画面で取得したApp IDに置き換えてください -->
+    <string name="admob_app_id">ca-app-pub-9861757930034185~8398755766</string>
+</resources>

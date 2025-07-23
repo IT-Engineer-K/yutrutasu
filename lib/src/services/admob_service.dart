@@ -12,23 +12,15 @@ class AdMobService {
   static Future<void> initialize() async {
     try {
       await MobileAds.instance.initialize();
-      if (kDebugMode) debugPrint('AdMob initialized successfully');
+      if (kDebugMode) {
+        debugPrint('✅ AdMob初期化完了');
+      }
     } catch (e) {
-      if (kDebugMode) debugPrint('AdMob initialization failed: $e');
+      // 初期化失敗時の処理
+      if (kDebugMode) {
+        debugPrint('❌ AdMob初期化失敗: $e');
+      }
     }
-  }
-
-  // バナー広告を作成
-  BannerAd createBannerAd({
-    required AdSize adSize,
-    required BannerAdListener listener,
-  }) {
-    return BannerAd(
-      adUnitId: AdMobConfig.bannerAdUnitId,
-      size: adSize,
-      request: const AdRequest(),
-      listener: listener,
-    );
   }
 
   // インタースティシャル広告を読み込み
@@ -43,7 +35,7 @@ class AdMobService {
           interstitialAd = ad;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          if (kDebugMode) debugPrint('InterstitialAd failed to load: $error');
+          // 広告読み込み失敗時の処理
         },
       ),
     );
@@ -63,7 +55,7 @@ class AdMobService {
           rewardedAd = ad;
         },
         onAdFailedToLoad: (LoadAdError error) {
-          if (kDebugMode) debugPrint('RewardedAd failed to load: $error');
+          // 広告読み込み失敗時の処理
         },
       ),
     );

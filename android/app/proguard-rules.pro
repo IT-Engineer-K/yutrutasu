@@ -15,9 +15,23 @@
 -keep interface com.google.android.play.core.** { *; }
 -dontwarn com.google.android.play.core.**
 
-# Google Mobile Ads
+# Google Mobile Ads (AdMob)
 -keep class com.google.android.gms.ads.** { *; }
 -keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.internal.** { *; }
+-dontwarn com.google.android.gms.ads.**
+
+# ネイティブ広告関連
+-keep class com.konju.yurutasu.NativeAdFactoryExample { *; }
+-keep class com.konju.yurutasu.MediumNativeAdFactory { *; }
+
+# Firebase (将来的に使用予定)
+-keep class com.google.firebase.** { *; }
+-dontwarn com.google.firebase.**
+
+# プライバシー関連
+-keep class com.google.android.gms.ads.identifier.** { *; }
+-dontwarn com.google.android.gms.ads.identifier.**
 -dontwarn com.google.android.gms.ads.**
 -dontwarn com.google.android.gms.common.**
 

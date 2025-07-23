@@ -10,6 +10,7 @@ import 'yaru_koto_detail_view.dart';
 import 'add_yaru_koto_dialog.dart';
 import 'edit_yaru_koto_dialog.dart';
 import 'native_ad_widget.dart';
+import 'privacy_policy_screen.dart';
 
 class YaruKotoListView extends StatefulWidget {
   const YaruKotoListView({super.key, required this.controller});
@@ -62,6 +63,14 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                 case 'settings':
                   Navigator.pushNamed(context, SettingsView.routeName);
                   break;
+                case 'privacy':
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PrivacyPolicyScreen(),
+                    ),
+                  );
+                  break;
               }
             },
             itemBuilder: (context) => [
@@ -72,6 +81,16 @@ class _YaruKotoListViewState extends State<YaruKotoListView> {
                     Icon(Icons.settings, size: 20),
                     SizedBox(width: 8),
                     Text('設定'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'privacy',
+                child: Row(
+                  children: [
+                    Icon(Icons.privacy_tip, size: 20),
+                    SizedBox(width: 8),
+                    Text('プライバシーポリシー'),
                   ],
                 ),
               ),

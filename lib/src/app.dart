@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'controllers/yaru_koto_controller.dart';
+import 'localization/app_localizations.dart';
 import 'views/yaru_koto_list_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
@@ -46,11 +46,11 @@ class MyApp extends StatelessWidget {
               primary: const Color(0xFF66BB6A),
             ),
             // より丸みを持たせるコンポーネントテーマを追加
-            cardTheme: CardTheme(
+            cardTheme: const CardThemeData(
               elevation: 2,
               color: Colors.white, // カードの色を白に統一
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
@@ -117,7 +117,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             // ダイアログのテーマを設定
-            dialogTheme: const DialogTheme(
+            dialogTheme: const DialogThemeData(
               backgroundColor: Colors.white,
               surfaceTintColor: Colors.transparent,
               shape: RoundedRectangleBorder(
@@ -157,11 +157,11 @@ class MyApp extends StatelessWidget {
               primary: const Color(0xFF66BB6A),
             ),
             // ダークテーマでも丸みを持たせるコンポーネントテーマを追加
-            cardTheme: CardTheme(
+            cardTheme: const CardThemeData(
               elevation: 2,
-              color: const Color(0xFF424242), // ダークテーマでは濃いグレー
+              color: Color(0xFF424242), // ダークテーマでは濃いグレー
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
@@ -228,7 +228,7 @@ class MyApp extends StatelessWidget {
               ),
             ),
             // ダークテーマのダイアログテーマを設定
-            dialogTheme: const DialogTheme(
+            dialogTheme: const DialogThemeData(
               backgroundColor: Color(0xFF2E2E2E),
               surfaceTintColor: Colors.transparent,
               shape: RoundedRectangleBorder(

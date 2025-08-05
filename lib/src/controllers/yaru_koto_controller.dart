@@ -83,37 +83,7 @@ class YaruKotoController extends ChangeNotifier {
     }
   }
 
-  /// 項目にタスクを追加
-  Future<void> addTask(String yaruKotoId, String taskItemId, String taskTitle) async {
-    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
-    if (yaruKotoIndex == -1) return;
 
-    final yaruKoto = _yaruKotoList[yaruKotoIndex];
-    final taskItemIndex = yaruKoto.items.indexWhere((e) => e.id == taskItemId);
-    if (taskItemIndex == -1) return;
-
-    final task = Task(
-      id: _uuid.v4(),
-      title: taskTitle,
-      createdAt: DateTime.now(),
-    );
-
-    final updatedTasks = List<Task>.from(yaruKoto.items[taskItemIndex].tasks)
-      ..add(task);
-
-    final updatedItems = List<TaskItem>.from(yaruKoto.items);
-    updatedItems[taskItemIndex] = updatedItems[taskItemIndex].copyWith(tasks: updatedTasks);
-
-    final updatedYaruKoto = yaruKoto.copyWith(items: updatedItems);
-
-    try {
-      await _service.updateYaruKoto(updatedYaruKoto);
-      _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
-      notifyListeners();
-    } catch (e) {
-      if (kDebugMode) debugPrint('Error adding task: $e');
-    }
-  }
 
   /// タスクの進捗を更新
   Future<void> updateTaskProgress(String yaruKotoId, String taskItemId, String taskId, TaskProgress progress) async {
@@ -406,8 +376,8 @@ class YaruKotoController extends ChangeNotifier {
         .toList();
   }
 
-  /// タスクを一括更新（追加・編集・削除・順序変更を含む）
-  Future<void> bulkUpdateTasks(String yaruKotoId, String taskItemId, List<String> taskTitles) async {
+  /// タスクを編集（追加・編集・削除・順序変更を含む）
+  Future<void> editTasks(String yaruKotoId, String taskItemId, List<String> taskTitles) async {
     final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
     if (yaruKotoIndex == -1) return;
 
@@ -462,7 +432,7 @@ class YaruKotoController extends ChangeNotifier {
       _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
       notifyListeners();
     } catch (e) {
-      if (kDebugMode) debugPrint('Error bulk updating tasks: $e');
+      if (kDebugMode) debugPrint('Error editing tasks: $e');
     }
   }
 }

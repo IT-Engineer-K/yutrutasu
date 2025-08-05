@@ -48,7 +48,10 @@ class ProgressHelpers {
       case TaskProgress.inProgress:
         return theme.colorScheme.primary;
       case TaskProgress.completed:
-        return Colors.white; // 完了時は白色で視認性を確保
+        // 完了時は適切なコントラストを持つ色を使用
+        return theme.brightness == Brightness.dark 
+            ? Colors.white 
+            : theme.colorScheme.onPrimary;
     }
   }
 

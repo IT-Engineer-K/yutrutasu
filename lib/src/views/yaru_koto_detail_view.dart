@@ -11,7 +11,6 @@ import '../common/progress_helpers.dart';
 import '../common/theme_helpers.dart';
 import 'edit_task_dialog.dart';
 import 'edit_item_dialog.dart';
-import 'add_task_dialog.dart';
 import 'bulk_edit_items_view.dart';
 
 class YaruKotoDetailView extends StatelessWidget {
@@ -432,9 +431,9 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                       ),
                       Text(
                         '${widget.item.tasks.length}個のタスク',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey,
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
                       ),
                     ],
@@ -475,24 +474,10 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             TextButton.icon(
-                              onPressed: () => _showBulkEditTasksDialog(context),
+                              onPressed: () => _showEditTasksDialog(context),
                               icon: Icon(Icons.edit_note, color: theme.colorScheme.primary, size: 16),
                               label: Text(
-                                '一括編集',
-                                style: TextStyle(color: theme.colorScheme.primary, fontSize: 12),
-                              ),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton.icon(
-                              onPressed: () => _showAddTaskDialog(context),
-                              icon: Icon(Icons.add, color: theme.colorScheme.primary, size: 16),
-                              label: Text(
-                                '追加',
+                                '編集',
                                 style: TextStyle(color: theme.colorScheme.primary, fontSize: 12),
                               ),
                               style: TextButton.styleFrom(
@@ -570,21 +555,10 @@ class _ExpandableTaskItemCardState extends State<_ExpandableTaskItemCard> {
     );
   }
 
-  void _showAddTaskDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddTaskDialog(
-        onAdd: (title) {
-          widget.controller.addTask(widget.yaruKoto.id, widget.item.id, title);
-        },
-      ),
-    );
-  }
-
-  void _showBulkEditTasksDialog(BuildContext context) {
+  void _showEditTasksDialog(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => BulkEditTasksView(
+        builder: (context) => EditTasksView(
           yaruKoto: widget.yaruKoto,
           taskItem: widget.item,
           controller: widget.controller,

@@ -383,4 +383,86 @@ class YaruKotoController extends ChangeNotifier {
       if (kDebugMode) debugPrint('Error reordering yaru koto: $e');
     }
   }
+
+  /// タスク一括編集用のテキスト取得
+  String getTasksAsText(String yaruKotoId, String taskItemId) {
+    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
+    if (yaruKotoIndex == -1) return '';
+
+    final yaruKoto = _yaruKotoList[yaruKotoIndex];
+    final taskItemIndex = yaruKoto.items.indexWhere((e) => e.id == taskItemId);
+    if (taskItemIndex == -1) return '';
+
+    final taskItem = yaruKoto.items[taskItemIndex];
+    return taskItem.tasks.map((task) => task.title).join('\n');
+  }
+
+  /// テキストからタスクリストへの変換
+  List<String> parseTaskTitlesFromText(String text) {
+    return text
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+  }
+
+  /// タスクを一括更新（追加・編集・削除・順序変更を含む）
+  Future<void> bulkUpdateTasks(String yaruKotoId, String taskItemId, List<String> taskTitles) async {
+    final yaruKotoIndex = _yaruKotoList.indexWhere((e) => e.id == yaruKotoId);
+    if (yaruKotoIndex == -1) return;
+
+    final yaruKoto = _yaruKotoList[yaruKotoIndex];
+    final taskItemIndex = yaruKoto.items.indexWhere((e) => e.id == taskItemId);
+    if (taskItemIndex == -1) return;
+
+    final taskItem = yaruKoto.items[taskItemIndex];
+    final currentTasks = taskItem.tasks;
+    final newTasks = <Task>[];
+
+    // 新しいタイトルリストに基づいてタスクを再構築
+    for (int i = 0; i < taskTitles.length; i++) {
+      final title = taskTitles[i];
+      
+      // 既存のタスクから同じタイトルのものを探す
+      Task? existingTask;
+      
+      // まず順序を考慮して既存タスクを探す
+      if (i < currentTasks.length && currentTasks[i].title == title) {
+        existingTask = currentTasks[i];
+      } else {
+        // 順序が違う場合は、全体から同じタイトルを探す
+        try {
+          existingTask = currentTasks.firstWhere((task) => task.title == title);
+        } catch (e) {
+          // 見つからない場合はnullのまま
+        }
+      }
+
+      if (existingTask != null) {
+        // 既存タスクを使用（進捗はそのまま保持）
+        newTasks.add(existingTask);
+      } else {
+        // 新しいタスクを作成
+        newTasks.add(Task(
+          id: _uuid.v4(),
+          title: title,
+          createdAt: DateTime.now(),
+        ));
+      }
+    }
+
+    // TaskItemを更新
+    final updatedItems = List<TaskItem>.from(yaruKoto.items);
+    updatedItems[taskItemIndex] = updatedItems[taskItemIndex].copyWith(tasks: newTasks);
+
+    final updatedYaruKoto = yaruKoto.copyWith(items: updatedItems);
+
+    try {
+      await _service.updateYaruKoto(updatedYaruKoto);
+      _yaruKotoList[yaruKotoIndex] = updatedYaruKoto;
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) debugPrint('Error bulk updating tasks: $e');
+    }
+  }
 }

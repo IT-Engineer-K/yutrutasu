@@ -42,11 +42,12 @@ class YaruKoto {
     String? description,
     List<TaskItem>? items,
     DateTime? createdAt,
+    bool clearDescription = false,
   }) {
     return YaruKoto(
       id: id ?? this.id,
       title: title ?? this.title,
-      description: description ?? this.description,
+      description: clearDescription ? null : (description ?? this.description),
       items: items ?? this.items,
       createdAt: createdAt ?? this.createdAt,
     );

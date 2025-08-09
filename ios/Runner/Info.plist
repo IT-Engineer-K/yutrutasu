@@ -53,10 +53,6 @@
 	<key>NSUserTrackingUsageDescription</key>
 	<string>このアプリは、より関連性の高い広告を表示するために広告IDを使用します。</string>
 	
-	<!-- Privacy Policy URL -->
-	<key>NSPrivacyPolicyURL</key>
-	<string>https://your-privacy-policy-url.com</string>
-	
 	<!-- Optional: AdMob debug settings -->
 	<key>GADIsAdManagerApp</key>
 	<true/>

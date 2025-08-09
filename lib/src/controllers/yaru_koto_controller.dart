@@ -167,6 +167,7 @@ class YaruKotoController extends ChangeNotifier {
     final updatedYaruKoto = _yaruKotoList[yaruKotoIndex].copyWith(
       title: title,
       description: description,
+      clearDescription: description == null,
     );
 
     try {
@@ -210,6 +211,7 @@ class YaruKotoController extends ChangeNotifier {
     updatedItems[taskItemIndex] = updatedItems[taskItemIndex].copyWith(
       title: title,
       description: description,
+      clearDescription: description == null,
     );
 
     final updatedYaruKoto = yaruKoto.copyWith(items: updatedItems);

@@ -2,7 +2,24 @@
 
 ## ✅ 修正済み（高優先度）
 
-### 1. 型安全性の強化
+##### 6. 🔍 重複コード削減・冗長性解消（新規追加 - 2025/7/9）
+- [x] **共通ダイアログヘルパー作成**（DialogHelpers）
+- [x] **進捗関連ユーティリティ統合**（ProgressHelpers）
+- [x] **削除確認ダイアログの統一化**
+- [x] **ポップアップメニューアイテムの共通化** 
+- [x] **進捗色計算ロジックの統一化**
+- [x] **デバッグ専用ファイルの削除**（animated_progress_demo.dart）
+- [x] **重複メソッドの大幅削除**
+
+### 7. 🐛 copyWithメソッドのnullクリア問題修正（新規追加 - 2025/8/9）
+- [x] **TaskItemモデルのcopyWithメソッド修正**（nullフィールド明示的クリア対応）
+- [x] **YaruKotoモデルのcopyWithメソッド修正**（nullフィールド明示的クリア対応）
+- [x] **YaruKotoControllerのcopyWith呼び出し更新**
+- [x] **バグ修正テストの追加**（bug_fix_test.dart）
+
+### 8. 📝 ドキュメント整理・廃止ファイル削除（新規追加 - 2025/8/9）
+- [x] **廃止予定ファイルの削除**（new_hierarchy_specification.md）
+- [x] **プライバシーポリシーの連絡先修正**（GitHub Issues URL追加）性の強化
 - [x] JSONパース時のnull安全性追加
 - [x] エラーハンドリングの改善  
 - [x] Material 3 deprecation警告修正
@@ -56,6 +73,7 @@
 - ❌ `lib/src/views/native_ad_sample_screen.dart`（使用されていない）
 - ❌ `lib/src/widgets/animated_linear_progress_indicator.dart`（使用されていない初期版アニメーションバー）
 - ❌ `lib/src/views/animated_progress_demo.dart`（デバッグ専用、本番不要）
+- ❌ `docs/new_hierarchy_specification.md`（実装完了により廃止）
 
 ### 新規作成したファイル
 - ✅ `lib/src/common/theme_helper.dart`（共通テーマユーティリティ）
@@ -66,6 +84,7 @@
 - ✅ `test/animated_percentage_text_test.dart`（アニメーション機能テスト）
 - ✅ `lib/src/common/dialog_helpers.dart`（共通ダイアログヘルパー）
 - ✅ `lib/src/common/progress_helpers.dart`（進捗関連ユーティリティ）
+- ✅ `test/bug_fix_test.dart`（copyWithメソッドバグ修正テスト）
 
 ## 🎯 重複コード削減の詳細結果
 

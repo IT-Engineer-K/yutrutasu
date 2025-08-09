@@ -38,11 +38,12 @@ class TaskItem {
     String? description,
     List<Task>? tasks,
     DateTime? createdAt,
+    bool clearDescription = false,
   }) {
     return TaskItem(
       id: id ?? this.id,
       title: title ?? this.title,
-      description: description ?? this.description,
+      description: clearDescription ? null : (description ?? this.description),
       tasks: tasks ?? this.tasks,
       createdAt: createdAt ?? this.createdAt,
     );

@@ -73,7 +73,7 @@ class ProgressHelpers {
       case TaskProgress.notStarted:
         return '';
       case TaskProgress.inProgress:
-        return '◐';
+        return '';
       case TaskProgress.completed:
         return '✓';
     }

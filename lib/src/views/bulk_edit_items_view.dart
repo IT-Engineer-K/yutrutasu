@@ -94,7 +94,7 @@ class _EditTasksViewState extends State<EditTasksView> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('タスクを一括更新しました'),
+            content: Text('タスクを更新しました'),
             backgroundColor: Colors.green,
           ),
         );
@@ -282,7 +282,7 @@ class _EditTasksViewState extends State<EditTasksView> {
                                         height: 24,
                                         decoration: BoxDecoration(
                                           color: ProgressHelpers.getProgressBackgroundColor(originalTask.progress, theme),
-                                          borderRadius: BorderRadius.circular(12),
+                                          shape: BoxShape.circle,
                                           border: Border.all(
                                             color: ProgressHelpers.getProgressBorderColor(originalTask.progress, theme),
                                             width: 1,
@@ -300,18 +300,13 @@ class _EditTasksViewState extends State<EditTasksView> {
                                         height: 24,
                                         decoration: BoxDecoration(
                                           color: theme.colorScheme.surface,
-                                          borderRadius: BorderRadius.circular(12),
+                                          shape: BoxShape.circle,
                                           border: Border.all(
                                             color: theme.colorScheme.outline.withOpacity(0.3),
                                             width: 1,
                                           ),
-                                        ),
-                                        child: const Center(
-                                          child: Text(
-                                            '🌰',
-                                            style: TextStyle(fontSize: 12),
-                                          ),
-                                        ),
+                                        )
+                                        
                                       ),
                               ),
                               const SizedBox(width: 12),

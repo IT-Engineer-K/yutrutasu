@@ -153,12 +153,12 @@ flutter pub upgrade
 ```gradle
 // android/app/build.gradle
 android {
-    compileSdkVersion 34
+    compileSdkVersion 36
     
     defaultConfig {
         applicationId "com.konju.yurutasu"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         

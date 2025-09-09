@@ -32,7 +32,7 @@ class YaruKoto {
   
   // 進捗率を自動計算（項目の平均値）
   double get progressPercentage;
-  String get progressLabel;   // 🌰🌱🌳 で表示
+  String get progressLabel;   // 🌱🌳 で表示
 }
 ```
 
@@ -47,7 +47,7 @@ class TaskItem {
   
   // 進捗率を自動計算（配下のタスクの平均値）
   double get progressPercentage;
-  String get progressLabel;   // 🌰🌱🌳 で表示
+  String get progressLabel;   // 🌱🌳 で表示
 }
 ```
 
@@ -61,7 +61,7 @@ class Task {
 }
 
 enum TaskProgress {
-  notStarted(0, '未着手'),    // 🌰
+  notStarted(0, '未着手'),
   inProgress(50, 'ちょっとやった'), // 🌱
   completed(100, '完了');     // 🌳
 }
@@ -101,7 +101,7 @@ enum TaskProgress {
   - 進捗率が変更されたときに数値とバーが滑らかにアニメーション
   - アニメーション時間: 0.5秒（500ms）
   - 段階的な数値変化: 30% → 30.1% → 30.2% ... → 50%
-- **アイコン表示**: 🌰🌱🌳 で進捗状態を表現
+- **アイコン表示**: 🌱🌳 で進捗状態を表現
 - **統計情報**: 各階層の項目数・進捗率の表示
 
 ### 5. データ永続化
@@ -157,7 +157,7 @@ lib/
 - **アクセントカラー**: #2E7D2E（濃い緑）
 - **背景色**: #F8FCF8（薄い緑）
 - **フォント**: システムフォント
-- **アイコン**: Material Icons + 絵文字（🌰🌱🌳）
+- **アイコン**: Material Icons + 絵文字（🌱🌳）
 
 ## 📱 ユーザーフロー
 1. **アプリ起動** → プロジェクト一覧表示

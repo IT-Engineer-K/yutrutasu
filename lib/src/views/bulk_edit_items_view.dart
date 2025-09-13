@@ -25,6 +25,7 @@ class _EditTasksViewState extends State<EditTasksView> {
   late List<TextEditingController> _lineControllers;
   late List<Task?> _originalTasks;
   bool _isSaving = false;
+  bool _isChanged = false;
 
   @override
   void initState() {
@@ -35,15 +36,22 @@ class _EditTasksViewState extends State<EditTasksView> {
   void _initializeData() {
     _originalTasks = List.from(widget.taskItem.tasks);
     _lineControllers = [];
-    
+
     // 既存タスクに対応するコントローラーを作成
     for (final task in widget.taskItem.tasks) {
-      _lineControllers.add(TextEditingController(text: task.title));
+      final controller = TextEditingController(text: task.title);
+      controller.addListener(() {
+        if (!_isChanged) {
+          setState(() {
+            _isChanged = true;
+          });
+        }
+      });
+      _lineControllers.add(controller);
     }
     
     // 空行を1つ追加（新規タスク追加用）
-    _lineControllers.add(TextEditingController());
-    _originalTasks.add(null);
+    _addNewLine(listen: true);
   }
 
   @override
@@ -54,25 +62,37 @@ class _EditTasksViewState extends State<EditTasksView> {
     super.dispose();
   }
 
-  void _addNewLine() {
+  void _addNewLine({bool listen = false}) {
+    final controller = TextEditingController();
+    if (listen) {
+      controller.addListener(() {
+        if (!_isChanged) {
+          setState(() {
+            _isChanged = true;
+          });
+        }
+      });
+    }
     setState(() {
-      _lineControllers.add(TextEditingController());
+      _lineControllers.add(controller);
       _originalTasks.add(null);
+      if (!listen) {
+        _isChanged = true;
+      }
     });
-  }
-
-  void _removeLine(int index) {
+  }  void _removeLine(int index) {
     if (_lineControllers.length <= 1) return; // 最低1行は残す
     
     setState(() {
       _lineControllers[index].dispose();
       _lineControllers.removeAt(index);
       _originalTasks.removeAt(index);
+      _isChanged = true;
     });
   }
 
   Future<void> _saveChanges() async {
-    if (_isSaving) return;
+    if (_isSaving || !_hasChanges()) return;
 
     setState(() {
       _isSaving = true;
@@ -91,6 +111,9 @@ class _EditTasksViewState extends State<EditTasksView> {
       );
       
       if (mounted) {
+        setState(() {
+          _isChanged = false;
+        });
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -118,19 +141,7 @@ class _EditTasksViewState extends State<EditTasksView> {
   }
 
   bool _hasChanges() {
-    final currentTitles = _lineControllers
-        .map((controller) => controller.text.trim())
-        .where((text) => text.isNotEmpty)
-        .toList();
-    
-    final originalTitles = widget.taskItem.tasks.map((task) => task.title).toList();
-    
-    if (currentTitles.length != originalTitles.length) return true;
-    
-    for (int i = 0; i < currentTitles.length; i++) {
-      if (currentTitles[i] != originalTitles[i]) return true;
-    }
-    return false;
+    return _isChanged;
   }
 
   @override
@@ -352,14 +363,15 @@ class _EditTasksViewState extends State<EditTasksView> {
                                   ),
                                   onSubmitted: (_) {
                                     if (index == _lineControllers.length - 1) {
-                                      _addNewLine();
+                                      _addNewLine(listen: true);
                                     }
                                   },
                                   onChanged: (text) {
                                     // 最後の行が入力され、かつまだ空行がない場合は新しい行を追加
                                     if (index == _lineControllers.length - 1 && 
-                                        text.isNotEmpty) {
-                                      _addNewLine();
+                                        text.isNotEmpty &&
+                                        _lineControllers.last.text.isNotEmpty) {
+                                      _addNewLine(listen: true);
                                     }
                                   },
                                 ),

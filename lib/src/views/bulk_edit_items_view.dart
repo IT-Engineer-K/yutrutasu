@@ -91,6 +91,19 @@ class _EditTasksViewState extends State<EditTasksView> {
     });
   }
 
+  bool _shouldShowDeleteButton(int index) {
+    // 最低1行は残す
+    if (_lineControllers.length <= 1) return false;
+    
+    // 既存タスクは常に削除ボタンを表示
+    final originalTask = index < _originalTasks.length ? _originalTasks[index] : null;
+    if (originalTask != null) return true;
+    
+    // 新規タスクでも、テキストが入力されていれば削除ボタンを表示
+    final controller = _lineControllers[index];
+    return controller.text.trim().isNotEmpty;
+  }
+
   Future<void> _saveChanges() async {
     if (_isSaving || !_hasChanges()) return;
 
@@ -260,7 +273,7 @@ class _EditTasksViewState extends State<EditTasksView> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            '1行1タスクで編集してください。右側の×ボタンで行を削除できます。',
+                            '1行1タスクで編集してください。既存タスクは右側の×ボタンで削除できます。',
                             style: TextStyle(
                               fontSize: 14,
                               color: theme.colorScheme.primary,
@@ -367,35 +380,36 @@ class _EditTasksViewState extends State<EditTasksView> {
                                     }
                                   },
                                   onChanged: (text) {
-                                    // 最後の行が入力され、かつまだ空行がない場合は新しい行を追加
-                                    if (index == _lineControllers.length - 1 && 
-                                        text.isNotEmpty &&
-                                        _lineControllers.last.text.isNotEmpty) {
-                                      _addNewLine(listen: true);
-                                    }
+                                    // テキスト変更時にUIを更新（×ボタンの表示状態を更新）
+                                    setState(() {
+                                      // 最後の行が入力され、かつまだ空行がない場合は新しい行を追加
+                                      if (index == _lineControllers.length - 1 && 
+                                          text.isNotEmpty &&
+                                          _lineControllers.last.text.isNotEmpty) {
+                                        _addNewLine(listen: true);
+                                      }
+                                    });
                                   },
                                 ),
                               ),
                               
                               const SizedBox(width: 8),
                               
-                              // 右側：削除ボタン
+                              // 右側：削除ボタン（空の新規タスク行には表示しない）
                               SizedBox(
                                 width: 32,
                                 height: 48,
-                                child: IconButton(
-                                  onPressed: _lineControllers.length > 1 
-                                      ? () => _removeLine(index)
-                                      : null,
-                                  icon: Icon(
-                                    Icons.close,
-                                    color: _lineControllers.length > 1 
-                                        ? theme.colorScheme.error
-                                        : theme.disabledColor,
-                                    size: 20,
-                                  ),
-                                  tooltip: '行を削除',
-                                ),
+                                child: _shouldShowDeleteButton(index)
+                                    ? IconButton(
+                                        onPressed: () => _removeLine(index),
+                                        icon: Icon(
+                                          Icons.close,
+                                          color: theme.colorScheme.error,
+                                          size: 20,
+                                        ),
+                                        tooltip: '行を削除',
+                                      )
+                                    : null,
                               ),
                             ],
                           ),

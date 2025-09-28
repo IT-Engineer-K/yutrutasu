@@ -73,7 +73,7 @@
 - ❌ `lib/src/views/native_ad_sample_screen.dart`（使用されていない）
 - ❌ `lib/src/widgets/animated_linear_progress_indicator.dart`（使用されていない初期版アニメーションバー）
 - ❌ `lib/src/views/animated_progress_demo.dart`（デバッグ専用、本番不要）
-- ❌ `docs/new_hierarchy_specification.md`（実装完了により廃止）
+- ❌ `AI_docs/new_hierarchy_specification.md`（実装完了により廃止）
 
 ### 新規作成したファイル
 - ✅ `lib/src/common/theme_helper.dart`（共通テーマユーティリティ）
@@ -132,7 +132,7 @@
 - ✅ `test/unit_test.dart`（実際のアプリモデルをテスト）
 - ✅ `test/widget_test.dart`（実際のアプリUIをテスト）
 - ✅ `README.md`（アニメーション進捗表示機能を追記）
-- ✅ `docs/specification.md`（アニメーション仕様を明記）
+- ✅ `AI_docs/specification.md`（アニメーション仕様を明記）
 
 ### 修正効果
 - 📉 コード行数削減：約200行

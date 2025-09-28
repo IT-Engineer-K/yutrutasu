@@ -36,11 +36,11 @@
 
 ## 📚 ドキュメント
 
-詳細なドキュメントは [`AI_docs/`](./AI_docs/) フォルダに整理されています：
+詳細なドキュメントは [`docs/`](./docs/) フォルダに整理されています：
 
-- **[仕様書](./AI_docs/specification.md)** - アプリケーションの全体仕様
-- **[アーキテクチャ](./AI_docs/architecture.md)** - 設計・構造の詳細
-- **[デザインガイドライン](./AI_docs/design_guidelines.md)** - UI/UXの統一指針
-- **[開発環境セットアップ](./AI_docs/development_setup.md)** - 開発環境構築ガイド
+- **[仕様書](./docs/specification.md)** - アプリケーションの全体仕様
+- **[アーキテクチャ](./docs/architecture.md)** - 設計・構造の詳細
+- **[デザインガイドライン](./docs/design_guidelines.md)** - UI/UXの統一指針
+- **[開発環境セットアップ](./docs/development_setup.md)** - 開発環境構築ガイド
 
-新規開発者の方は [AI_docs/README.md](./AI_docs/README.md) から始めることをお勧めします。
+新規開発者の方は [docs/README.md](./docs/README.md) から始めることをお勧めします。
